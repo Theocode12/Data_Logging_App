@@ -1,0 +1,2 @@
+# Library to help parse GPS coordinates
+gpsd-py
