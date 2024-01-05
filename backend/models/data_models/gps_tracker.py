@@ -1,5 +1,5 @@
 from typing import Dict, Optional
-from data_models import BaseModelLogger
+from models.data_models import BaseModelLogger
 import gpsd
 
 

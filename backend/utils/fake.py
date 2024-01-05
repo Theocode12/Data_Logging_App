@@ -1,4 +1,4 @@
-from unittest.mock import Mock, create_autospec
+from unittest.mock import Mock
 
 class Fake(object):
     """Create Mock()ed methods that match another class's methods."""

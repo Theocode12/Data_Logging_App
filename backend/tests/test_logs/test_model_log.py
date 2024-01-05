@@ -1,4 +1,4 @@
-from data_models.gps_tracker import GPSTracker, GPSConnectionError, GPSDataError, gpsd, BaseModelLogger
+from models.data_models.gps_tracker import GPSTracker, GPSConnectionError, GPSDataError, gpsd, BaseModelLogger
 from unittest.mock import patch, Mock
 from utils.fake import Fake
 from utils.logger import BaseLogger
@@ -38,13 +38,13 @@ class TestGPSTrackerLogging(unittest.TestCase):
 
 
     def test_log_initialization_message(self):
-        with patch("data_models.gps_tracker.BaseModelLogger", autospec=True) as mock_base_logger:
+        with patch("models.data_models.gps_tracker.BaseModelLogger", autospec=True) as mock_base_logger:
             GPSTracker()
             mock_base_logger.return_value.debug.assert_called_once_with("GPSTracker Models logger started")
 
 
     def test_logger_name(self):
-        with patch("data_models.gps_tracker.BaseModelLogger", autospec=True) as mock_base_logger:
+        with patch("models.data_models.gps_tracker.BaseModelLogger", autospec=True) as mock_base_logger:
             tracker = GPSTracker()
             mock_base_logger.assert_called_once_with('data_models.gps_tracker')
             self.assertEqual(tracker.gps_logger, mock_base_logger.return_value)
@@ -52,7 +52,7 @@ class TestGPSTrackerLogging(unittest.TestCase):
 
     def test_connection_error_logging(self):
         # Act & Assert
-        with patch("gpsd.connect", side_effect=GPSConnectionError, autospec=True), patch("data_models.gps_tracker.BaseModelLogger", autospec=True) as mock_base_logger:
+        with patch("gpsd.connect", side_effect=GPSConnectionError, autospec=True), patch("models.data_models.gps_tracker.BaseModelLogger", autospec=True) as mock_base_logger:
             with self.assertRaises(GPSConnectionError):
                 tracker = GPSTracker()
                 tracker.connect()
@@ -61,7 +61,7 @@ class TestGPSTrackerLogging(unittest.TestCase):
 
     def test_data_error_logging(self):
         with patch("gpsd.connect", autospec=True), patch("gpsd.get_current", side_effect=GPSDataError, autospec=True):
-            with patch("data_models.gps_tracker.BaseModelLogger", autospec=True) as mock_base_logger:
+            with patch("models.data_models.gps_tracker.BaseModelLogger", autospec=True) as mock_base_logger:
                 with self.assertRaises(GPSDataError):
                     tracker = GPSTracker()
                     tracker.connect()
