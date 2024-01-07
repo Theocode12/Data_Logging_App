@@ -6,7 +6,9 @@ class BaseModelLogger(BaseLogger):
     def __init__(self, name=None):
         super().__init__(name)
 
-    def customiseLogger(self, level=logging.DEBUG, filename="./logs/models.log", format=None):
+    def customiseLogger(
+        self, level=logging.DEBUG, filename="./logs/models.log", format=None
+    ):
         self.setLevel(level)
         self.setFileHandler(filename)
         self.setStreamHandler()
@@ -15,4 +17,3 @@ class BaseModelLogger(BaseLogger):
             self.setFormatter(format)
 
         return self
-

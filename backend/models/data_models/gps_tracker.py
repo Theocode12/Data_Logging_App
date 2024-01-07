@@ -1,3 +1,4 @@
+from models.exceptions.exception import GPSConnectionError, GPSDataError
 from typing import Dict, Optional
 from models.data_models import BaseModelLogger
 import gpsd
@@ -5,6 +6,7 @@ import gpsd
 
 class GPSTracker:
     """This class implements a way of consistently getting the relevant gps data in dictionary format"""
+
     def __init__(self, logger=None) -> None:
         """Constructor attempts to connect to the GPS device and sets up the data attribute to store date"""
         self.GPSResponse: Optional[gpsd.GpsResponse] = None
@@ -12,8 +14,8 @@ class GPSTracker:
             "longitude": None,
             "latitude": None,
             "altitude": None,
-            "speed": None
-            }
+            "speed": None,
+        }
         self.gps_logger = logger or BaseModelLogger("data_models.gps_tracker")
         self.gps_logger.customiseLogger()
         self.gps_logger.debug("GPSTracker Models logger started")
@@ -26,7 +28,6 @@ class GPSTracker:
         except Exception:
             self.gps_logger.error("Could not connect to GPS device")
             raise GPSConnectionError("Could not connect to GPS device")
-
 
     def _pollGPSData(self) -> None:
         """polls gps data from gps device and stores it in the data attribute"""
@@ -51,17 +52,14 @@ class GPSTracker:
 
     def _gather_data(self) -> None:
         """Calls the relevant method to store the data in the data attribute"""
-        set_methods = [method for method in dir(self) if callable(getattr(self, method)) and method.startswith('_set')]
+        set_methods = [
+            method
+            for method in dir(self)
+            if callable(getattr(self, method)) and method.startswith("_set")
+        ]
         for method_name in set_methods:
             getattr(self, method_name)()
 
     def get_data(self) -> Dict[str, Optional[float]]:
         self._pollGPSData()
         return self.data
-
-
-class GPSConnectionError(Exception):
-    pass
-
-class GPSDataError(Exception):
-    pass

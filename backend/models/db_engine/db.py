@@ -1,11 +1,20 @@
-from models.exceptions.exception import FileOpenError, FileReadError, FileWriteError, FileCloseError, CreateDirectoryError, RemoveDirectoryError
-from typing import Optional, Dict, List, Any
+from models.exceptions.exception import (
+    FileOpenError,
+    FileReadError,
+    FileWriteError,
+    FileCloseError,
+    CreateDirectoryError,
+    RemoveDirectoryError,
+)
+from typing import Optional, Dict, List, Any, Union
 from datetime import datetime
 import os
 import io
 
+
 class DBManager:
     meta = ""
+
     def __init__(self, lock=None):
         self.lock = lock
         self.db = FileDB()
@@ -15,10 +24,9 @@ class DBManager:
         if not self.target:
             self._set_tagert()
         # Aquire the lock
-        with open(self.target, mode='r+') as fd:
+        with open(self.target, mode="r+") as fd:
             fd.write(data)
         # Release the lock
-
 
     def read(self, *meta):
         pass
@@ -31,9 +39,12 @@ class DBManager:
 
     def _set_tagert(self):
         self.target = self.db.init_file()
+
+
 # New Idea: So i'm thinking of a way of writing or reading to file using an Open api from the which returns a file
 # file descriptor for the file and we can read or write data to it. I want DB manager to handle this
 # functionality.
+
 
 class FileDB:
 
@@ -96,11 +107,15 @@ class FileDB:
         Raises:
         - Exception: If an error occurs while creating the file.
         """
+        created = False
         if not path:
             now = datetime.now()
             year, month, day = now.year, now.month, now.day
 
-            dir = os.path.join(''.join([os.getcwd().split('backend')[0], "backend"]), f"data/{year}/{month:02d}")
+            dir = os.path.join(
+                "".join([os.getcwd().split("backend")[0], "backend"]),
+                f"data/{year}/{month:02d}",
+            )
 
             self.create_dir(dir)
             path = os.path.join(dir, f"{day:02d}.txt")
@@ -109,10 +124,11 @@ class FileDB:
             try:
                 self.open(path, "x")
                 self.write("")
+                created = True
                 # Log file creation
             finally:
                 self.close()
-        return path
+        return path, created
 
     def delete_file(self, path):
         if os.path.exists(path):
@@ -121,7 +137,7 @@ class FileDB:
             except Exception:
                 pass
 
-    def set_target(self, path: Optional[str]=None) -> str:
+    def set_target(self, path: Optional[str] = None) -> str:
         """
         Set the target file path for the database.
 
@@ -136,7 +152,7 @@ class FileDB:
         Raises:
         - Exception: If an error occurs while creating the file.
         """
-        self.close() # For safety because fd doesn't correspond to target
+        self.close()  # For safety because fd doesn't correspond to target
         self.target = path
         return self.target
 
@@ -145,7 +161,7 @@ class FileDB:
         Open a file for reading or writing.
 
         Args:
-        - path: The path to the file.
+        - path: The path to the file. if None, self.target is used
         - mode: The mode in which to open the file ('r' for reading, 'w' for writing, etc.).
 
         Returns:
@@ -197,6 +213,10 @@ class FileDB:
 
         return len(data)
 
+    def write_data_line(self, data: Dict[str, Any]) -> int:
+        line = ",".join([f"{key}={value}" for key, value in data.items()])
+        self.write(line + "\n")
+
     def readline(self) -> str:
         """
         Read a line from the open file.
@@ -235,6 +255,7 @@ class FileDB:
 
 class MetaDB(FileDB):
     metadata_lines: List[str] = []
+
     def __init__(self):
         """
         Initialize a MetaDB instance.
@@ -243,6 +264,7 @@ class MetaDB(FileDB):
         - meta: A dictionary to store metadata.
         """
         self.meta = {}
+        super().__init__()
 
     def retrieve_metadata_lines(self, path: Optional[str] = None) -> List[str]:
         """
@@ -254,15 +276,16 @@ class MetaDB(FileDB):
         Returns:
         A list of lines from the metadata file.
         """
-        path = self._get_metadata_path(path)
+        if not path:
+            path = self._get_metadata_path(path)
         try:
-            self.open(path, 'r')
-            self.metadata_lines = self.readlines()
+            self.open(path, "r")
+            self.metadata_lines = [line.rstrip("\n") for line in super().readlines()]
         finally:
             self.close()
         return self.metadata_lines
 
-    def update_metadata_lines(self, meta: Dict[str, Any] = None) -> List[str]:
+    def update_metadata_lines(self, meta: Dict[str, Any] = {}) -> List[str]:
         """
         Update lines in the metadata file with provided metadata.
 
@@ -272,21 +295,27 @@ class MetaDB(FileDB):
         Returns:
         The updated list of lines from the metadata file.
         """
-        keys = set(meta.keys() or self.meta.keys())
+        meta = meta or self.meta
+        keys = set(meta.keys())
         for index, line in enumerate(self.metadata_lines):
-            if not line.startswith('#') and not line.startswith('\n'):
-                datakey = line.split('=')[0]
+            if not line.startswith("#") and line:
+                datakey = line.split("=")[0]
                 if datakey in keys:
-                    self.metadata_lines[index] = "{}={}".format(datakey, self.meta[datakey])
+                    self.metadata_lines[index] = "{}={}".format(datakey, meta[datakey])
+                    keys.remove(datakey)
+        for key in keys:
+            self.metadata_lines.append("{}={}".format(key, meta[key]))
         return self.metadata_lines
 
-    def retrieve_metadata(self, path: Optional[str] = None, *args: str) -> Dict[str, str]:
+    def retrieve_metadata(
+        self, path: Optional[str] = None, meta: List[str] = []
+    ) -> Dict[str, str]:
         """
         Retrieve metadata from a file.
 
         Args:
         - path: The optional path to the metadata file.
-        - *args: Optional keys to retrieve from the metadata.
+        - meta: Optional keys to retrieve from the metadata_lines.
 
         Returns:
         The retrieved metadata.
@@ -297,14 +326,15 @@ class MetaDB(FileDB):
 
         lines = self.retrieve_metadata_lines(path)
         for line in lines:
-            if not line.startswith('#') and not line.startswith('\n'):
-                line = line.rstrip('\n')
-                key, val = line.split('=')
-                if not args or key in args:
-                    self.meta[key] = val
+            if not line.startswith("#") and "=" in line:
+                key, val = [line.strip() for line in line.split("=")]
+                if not meta or key in meta:
+                    self.meta[key] = convert_to_int_or_leave_unchanged(val)
         return self.meta
 
-    def save_metadata(self, meta: Dict[str, Any], path: Optional[str] = None) -> None:
+    def save_metadata(
+        self, path: Optional[str] = None, meta: Dict[str, Any] = {}
+    ) -> None:
         """
         Save metadata to a file.
 
@@ -317,14 +347,18 @@ class MetaDB(FileDB):
         Raises:
         - Exception: If an error occurs while saving the metadata.
         """
-        path = self._get_metadata_path(path)
-        self.create_file(path)
+        if not path:
+            path = self._get_metadata_path()
+
+        if not self.create_file(path)[1]:
+            self.retrieve_metadata_lines(path)
         try:
-            self.open(path, 'w')
-            self.fd.writelines(self.update_metadata_lines(meta))
+            self.open(path, "w")
+            for line in self.update_metadata_lines(meta):
+                self.write(line + "\n")
         finally:
             self.close()
-        #Log save metadata
+        # Log save metadata
 
     def clear_metadata(self) -> None:
         """
@@ -336,7 +370,6 @@ class MetaDB(FileDB):
         None
         """
         self.meta = {}
-
 
     def update_metadata(self, newmeta: Dict[str, str]) -> Dict[str, str]:
         """
@@ -365,12 +398,13 @@ class MetaDB(FileDB):
         Raises:
         - Exception: If an error occurs while reading from the file.
         """
-        self.fd.seek(offset or self.meta.get('offset', 0))
+
+        self.fd.seek(offset or int(self.meta.get("offset", 0)))
         line = super().readline()
         self.update_metadata({"offset": self.fd.tell()})
         return line
 
-    def readlines(self, offset = None) -> List[str]:
+    def readlines(self, offset=None) -> List[str]:
         """
         Read all lines from the open file.
 
@@ -380,7 +414,7 @@ class MetaDB(FileDB):
         Returns:
         The list of read lines.
         """
-        self.fd.seek(offset or self.meta.get('offset', 0))
+        self.fd.seek(offset or int(self.meta.get("offset", 0)))
         lines = super().readlines()
         self.update_metadata({"offset": self.fd.tell()})
         return lines
@@ -395,5 +429,27 @@ class MetaDB(FileDB):
         Returns:
         The path to the metadata file.
         """
-        base_path = os.path.join(''.join([os.getcwd().split('backend')[0], "backend"]), "config")
-        return os.path.join(base_path, custom_path) if custom_path else os.path.join(base_path, "meta.txt")
+        base_path = os.path.join(
+            "".join([os.getcwd().split("backend")[0], "backend"]), "config"
+        )
+        return (
+            os.path.join(base_path, custom_path)
+            if custom_path
+            else os.path.join(base_path, "meta.txt")
+        )
+
+
+def convert_to_int_or_leave_unchanged(value: str) -> Union[int, str]:
+    """
+    Attempt to convert a string to an integer. If successful, return the integer;
+    otherwise, return the original string.
+
+    Args:
+    - value (str): The input string.
+
+    Returns:
+    - Union[int, str]: The converted integer or the original string.
+    """
+    if value.isdigit():
+        return int(value)
+    return value

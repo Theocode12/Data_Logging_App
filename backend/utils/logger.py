@@ -1,5 +1,6 @@
 import logging
 
+
 class BaseLogger(logging.Logger):
     def __init__(self, name: str) -> None:
         self.logger: logging.Logger = logging.getLogger(name)
@@ -15,7 +16,11 @@ class BaseLogger(logging.Logger):
         return self.format
 
     def setFileHandler(self, filename: str) -> None:
-        self.logger.addHandler(logging.FileHandler(filename).setFormatter(self.getFormatter()))
+        self.logger.addHandler(
+            logging.FileHandler(filename).setFormatter(self.getFormatter())
+        )
 
     def setStreamHandler(self) -> None:
-        self.logger.addHandler(logging.StreamHandler().setFormatter(self.getFormatter()))
+        self.logger.addHandler(
+            logging.StreamHandler().setFormatter(self.getFormatter())
+        )

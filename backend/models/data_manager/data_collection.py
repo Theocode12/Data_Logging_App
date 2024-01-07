@@ -1,6 +1,7 @@
 from models.db_engine.db import DBManager
 from time import sleep
 
+
 class DataCollectionManager:
     def __init__(self, cls, **kwargs):
         """kwarg are the locks and queues or probably manager"""
@@ -11,7 +12,7 @@ class DataCollectionManager:
             if callable(getattr(c, "get_data", None)):
                 self.data_models.append(c)
             else:
-                pass # Log the Issue
+                pass  # Log the Issue
 
     def start(self):
         if self.data_models:
@@ -23,10 +24,7 @@ class DataCollectionManager:
                 sleep(1)
 
         else:
-            pass # Log the Issue
+            pass  # Log the Issue
 
 
 # How do i stop the datacollection process. Idea is using events or some thing that can communicate between process
-
-
-
