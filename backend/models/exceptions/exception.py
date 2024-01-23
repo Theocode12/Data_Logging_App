@@ -28,3 +28,15 @@ class CreateDirectoryError(Exception):
 
 class RemoveDirectoryError(Exception):
     pass
+
+
+class AWSCloudConnectionError(Exception):
+    pass
+
+
+class AWSCloudDisconnectError(Exception):
+    pass
+
+
+class FileUploadError(Exception):
+    pass

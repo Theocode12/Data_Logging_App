@@ -6,8 +6,9 @@ from models.exceptions.exception import (
     CreateDirectoryError,
     RemoveDirectoryError,
 )
-from typing import Optional, Dict, List, Any, Union
+from typing import Optional, Dict, List, Any, Union, Tuple
 from datetime import datetime
+from utils import get_base_path
 import os
 import io
 
@@ -66,6 +67,14 @@ class FileDB:
         self.target = None
         self.fd: io.TextIOWrapper = None
 
+    def __enter__(self):
+        self.open(mode="r+")
+        return self
+
+    def __exit__(self, exc_type, exc_value, trace):
+        self.close()
+        # use our custom logger here to handle exceptions
+
     def create_dir(self, dir: Optional[str] = None) -> str:
         """
         Create a directory.
@@ -94,6 +103,7 @@ class FileDB:
                 raise RemoveDirectoryError("Failed to remove directory: {}".format(dir))
         return dir
 
+    # Refactor the created out of this function
     def create_file(self, path: Optional[str] = None) -> str:
         """
         Create a file.
@@ -107,28 +117,32 @@ class FileDB:
         Raises:
         - Exception: If an error occurs while creating the file.
         """
-        created = False
         if not path:
-            now = datetime.now()
-            year, month, day = now.year, now.month, now.day
+            path = self.get_db_filepath()
 
-            dir = os.path.join(
-                "".join([os.getcwd().split("backend")[0], "backend"]),
-                f"data/{year}/{month:02d}",
-            )
-
-            self.create_dir(dir)
-            path = os.path.join(dir, f"{day:02d}.txt")
-
-        if not os.path.exists(path):
+        if not self.file_exits(path):
             try:
                 self.open(path, "x")
                 self.write("")
-                created = True
                 # Log file creation
             finally:
                 self.close()
-        return path, created
+        return path
+
+    def file_exits(self, path: str) -> bool:
+        return os.path.exists(path)
+
+    def get_db_filepath(self) -> str:
+        now = datetime.now()
+        year, month, day = now.year, now.month, now.day
+
+        dir = os.path.join(
+            "".join([os.getcwd().split("backend")[0], "backend"]),
+            f"data/{year}/{month:02d}",
+        )
+
+        self.create_dir(dir)
+        return os.path.join(dir, f"{day:02d}.txt")
 
     def delete_file(self, path):
         if os.path.exists(path):
@@ -137,14 +151,14 @@ class FileDB:
             except Exception:
                 pass
 
-    def set_target(self, path: Optional[str] = None) -> str:
+    def set_target(self, path) -> str:
         """
         Set the target file path for the database.
 
         If no target path is provided, a new file path is generated using the current date.
 
         Args:
-        - path: The optional target file path.
+        - path: The target file path.
 
         Returns:
         The target file path.
@@ -156,7 +170,7 @@ class FileDB:
         self.target = path
         return self.target
 
-    def open(self, path: str = None, mode: str = "x") -> io.TextIOWrapper:
+    def open(self, path: str = None, mode: str = "r+") -> io.TextIOWrapper:
         """
         Open a file for reading or writing.
 
@@ -266,7 +280,9 @@ class MetaDB(FileDB):
         self.meta = {}
         super().__init__()
 
-    def retrieve_metadata_lines(self, path: Optional[str] = None) -> List[str]:
+    def retrieve_metadata_lines(
+        self, path: Optional[str] = None, forcedb=True
+    ) -> List[str]:
         """
         Retrieve lines from a metadata file.
 
@@ -277,12 +293,15 @@ class MetaDB(FileDB):
         A list of lines from the metadata file.
         """
         if not path:
-            path = self._get_metadata_path(path)
-        try:
-            self.open(path, "r")
-            self.metadata_lines = [line.rstrip("\n") for line in super().readlines()]
-        finally:
-            self.close()
+            path = self.get_metadata_path(path)
+        if forcedb:
+            try:
+                self.open(path, "r")
+                self.metadata_lines = [
+                    line.rstrip("\n") for line in super().readlines()
+                ]
+            finally:
+                self.close()
         return self.metadata_lines
 
     def update_metadata_lines(self, meta: Dict[str, Any] = {}) -> List[str]:
@@ -308,7 +327,7 @@ class MetaDB(FileDB):
         return self.metadata_lines
 
     def retrieve_metadata(
-        self, path: Optional[str] = None, meta: List[str] = []
+        self, path: Optional[str] = None, meta: List[str] = [], forcedb: bool = True
     ) -> Dict[str, str]:
         """
         Retrieve metadata from a file.
@@ -324,7 +343,7 @@ class MetaDB(FileDB):
         - Exception: If an error occurs while retrieving the metadata.
         """
 
-        lines = self.retrieve_metadata_lines(path)
+        lines = self.retrieve_metadata_lines(path, forcedb)
         for line in lines:
             if not line.startswith("#") and "=" in line:
                 key, val = [line.strip() for line in line.split("=")]
@@ -348,9 +367,9 @@ class MetaDB(FileDB):
         - Exception: If an error occurs while saving the metadata.
         """
         if not path:
-            path = self._get_metadata_path()
+            path = self.get_metadata_path()
 
-        if not self.create_file(path)[1]:
+        if self.file_exits(path):
             self.retrieve_metadata_lines(path)
         try:
             self.open(path, "w")
@@ -399,9 +418,9 @@ class MetaDB(FileDB):
         - Exception: If an error occurs while reading from the file.
         """
 
-        self.fd.seek(offset or int(self.meta.get("offset", 0)))
+        self.fd.seek(offset or int(self.meta.get("Offset", 0)))
         line = super().readline()
-        self.update_metadata({"offset": self.fd.tell()})
+        self.update_metadata({"Offset": self.fd.tell()})
         return line
 
     def readlines(self, offset=None) -> List[str]:
@@ -414,12 +433,13 @@ class MetaDB(FileDB):
         Returns:
         The list of read lines.
         """
-        self.fd.seek(offset or int(self.meta.get("offset", 0)))
+        if offset is not None:
+            self.fd.seek(offset)
         lines = super().readlines()
-        self.update_metadata({"offset": self.fd.tell()})
+        self.update_metadata({"Offset": self.fd.tell()})
         return lines
 
-    def _get_metadata_path(self, custom_path: Optional[str] = None) -> str:
+    def get_metadata_path(self, custom_path: Optional[str] = None) -> str:
         """
         Get the path to the metadata file.
 
@@ -429,14 +449,8 @@ class MetaDB(FileDB):
         Returns:
         The path to the metadata file.
         """
-        base_path = os.path.join(
-            "".join([os.getcwd().split("backend")[0], "backend"]), "config"
-        )
-        return (
-            os.path.join(base_path, custom_path)
-            if custom_path
-            else os.path.join(base_path, "meta.txt")
-        )
+
+        return os.path.join("{}".format(get_base_path()), "config", "meta.txt")
 
 
 def convert_to_int_or_leave_unchanged(value: str) -> Union[int, str]:

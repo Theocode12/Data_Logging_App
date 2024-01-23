@@ -35,7 +35,7 @@ class TestFileDB(unittest.TestCase):
             f"data/{year}/{month:02d}/{day:02d}.txt",
         )
 
-        self.skipTest("Not Needed until application is running")
+        # self.skipTest("Not Needed until application is running")
         if not os.path.exists(true_path):
             path = self.db.create_file()
             self.assertTrue(os.path.exists(path))
@@ -129,26 +129,26 @@ class TestMetaDB(unittest.TestCase):
         self.assertIsInstance(self.db.meta, dict)
         self.assertEqual(self.db.meta, {})
 
-        self.db.meta = {"offset": 0, "target": "/tmp/test"}
+        self.db.meta = {"Offset": 0, "target": "/tmp/test"}
         self.db.clear_metadata()
         self.assertDictEqual(self.db.meta, {})
 
     def test_update_metadata(self):
-        meta = {"offset": 0, "target": "/tmp/test"}
+        meta = {"Offset": 0, "target": "/tmp/test"}
 
         # Test when self.db.meta is empty
         self.db.update_metadata(meta)
         self.assertDictEqual(self.db.meta, meta)
 
         # Test when self.db.meta is not empty
-        newmeta = {"offset": 1, "type": "backend"}
+        newmeta = {"Offset": 1, "type": "backend"}
         self.db.update_metadata(newmeta)
         meta.update(newmeta)
         self.assertDictEqual(self.db.meta, meta)
 
-    def test_get_metadata_path(self):
+    def testget_metadata_path(self):
         # Test without custom_path parameter
-        metadata_path = self.db._get_metadata_path()
+        metadata_path = self.db.get_metadata_path()
         true_path = os.path.join(
             os.path.join(
                 "".join([os.getcwd().split("backend")[0], "backend"]), "config"
@@ -158,7 +158,7 @@ class TestMetaDB(unittest.TestCase):
         self.assertEqual(metadata_path, true_path)
 
         # Test with custom_path parameter
-        metadata_path = self.db._get_metadata_path("test")
+        metadata_path = self.db.get_metadata_path("test")
         true_path = os.path.join(
             os.path.join(
                 "".join([os.getcwd().split("backend")[0], "backend"]), "config"
@@ -176,7 +176,7 @@ class TestMetaDB(unittest.TestCase):
         self.assertEqual(len(lines), 0)
 
         # write to the file
-        w_lines = ["file=/tmp/test", "offset=0"]
+        w_lines = ["file=/tmp/test", "Offset=0"]
         with open(self.db.target, "w") as fd:
             for line in w_lines:
                 fd.write(line + "\n")
@@ -194,19 +194,19 @@ class TestMetaDB(unittest.TestCase):
         self.db.metadata_lines = [
             "# CloudTF metadata",
             "file=/tmp/test",
-            "offset=0",
+            "Offset=0",
             "",
             "",
             "# Models Metadata",
             "GPS = GPSTracker",
             "Battery= Ba3Performance",
         ]
-        newmeta = {"offset": 20}
+        newmeta = {"Offset": 20}
         metadatalines = self.db.update_metadata_lines(newmeta)
         true_metadatalines = [
             "# CloudTF metadata",
             "file=/tmp/test",
-            "offset=20",
+            "Offset=20",
             "",
             "",
             "# Models Metadata",
@@ -216,11 +216,11 @@ class TestMetaDB(unittest.TestCase):
         self.assertEqual(metadatalines, true_metadatalines)
 
         # Test when meta is not provided but self.meta is present
-        self.db.meta = {"offset": 0}
+        self.db.meta = {"Offset": 0}
         true_metadatalines = [
             "# CloudTF metadata",
             "file=/tmp/test",
-            "offset=0",
+            "Offset=0",
             "",
             "",
             "# Models Metadata",
@@ -234,7 +234,7 @@ class TestMetaDB(unittest.TestCase):
         metadata_lines = [
             "# CloudTF metadata",
             "file=/tmp/test",
-            "offset=0",
+            "Offset=0",
             "",
             "",
             "# Models Metadata",
@@ -252,7 +252,7 @@ class TestMetaDB(unittest.TestCase):
         # Retrive metadata without args
         meta = self.db.retrieve_metadata(self.db.target)
         true_meta = {
-            "offset": 0,
+            "Offset": 0,
             "file": "/tmp/test",
             "GPS": "GPSTracker",
             "Battery": "Ba3Performance",
@@ -261,8 +261,8 @@ class TestMetaDB(unittest.TestCase):
 
         # Retrieve metadata with args
         self.db.clear_metadata()
-        meta = self.db.retrieve_metadata(self.db.target, ["offset", "GPS", "Compass"])
-        true_meta = {"offset": 0, "GPS": "GPSTracker"}
+        meta = self.db.retrieve_metadata(self.db.target, ["Offset", "GPS", "Compass"])
+        true_meta = {"Offset": 0, "GPS": "GPSTracker"}
         self.assertDictEqual(meta, true_meta)
 
     def test_save_metadata(self):
@@ -283,7 +283,7 @@ class TestMetaDB(unittest.TestCase):
         metadata_lines = [
             "# CloudTF metadata",
             "file=/tmp/test",
-            "offset=0",
+            "Offset=0",
             "",
             "",
             "# Models Metadata",
@@ -296,7 +296,7 @@ class TestMetaDB(unittest.TestCase):
             for line in metadata_lines:
                 fd.write(line + "\n")
 
-        self.db.save_metadata(self.db.target, {"offset": 20})
+        self.db.save_metadata(self.db.target, {"Offset": 20})
 
         with open(self.db.target, "r") as fd:
             saved_metadatalines = fd.readlines()
@@ -306,7 +306,7 @@ class TestMetaDB(unittest.TestCase):
         new_metadatalines = metadata_lines = [
             "# CloudTF metadata",
             "file=/tmp/test",
-            "offset=20",
+            "Offset=20",
             "",
             "",
             "# Models Metadata",
@@ -320,7 +320,7 @@ class TestMetaDB(unittest.TestCase):
         metadata_lines = [
             "# CloudTF metadata",
             "file=/tmp/test",
-            "offset=0",
+            "Offset=0",
             "",
             "",
             "# Models Metadata",
@@ -333,29 +333,29 @@ class TestMetaDB(unittest.TestCase):
             for line in metadata_lines:
                 fd.write(line + "\n")
 
-        # Test if offset value changes for first read
+        # Test if Offset value changes for first read
         meta = self.db.retrieve_metadata(self.db.target).copy()
         self.db.open(self.db.target, "r")
         line = self.db.readline()
         self.db.close()
 
         self.assertIsInstance(line, str)
-        self.assertNotEqual(int(meta.get("offset")), int(self.db.meta.get("offset")))
+        self.assertNotEqual(int(meta.get("Offset")), int(self.db.meta.get("Offset")))
 
-        # Test if offset value updates for second read operation
+        # Test if Offset value updates for second read operation
         meta = self.db.meta.copy()
         self.db.open(self.db.target, "r")
         line = self.db.readline()
         self.db.close()
 
         self.assertIsInstance(line, str)
-        self.assertNotEqual(int(meta.get("offset")), int(self.db.meta.get("offset")))
+        self.assertNotEqual(int(meta.get("Offset")), int(self.db.meta.get("Offset")))
 
     def test_readlines(self):
         metadata_lines = [
             "# CloudTF metadata",
             "file=/tmp/test",
-            "offset=0",
+            "Offset=0",
             "",
             "",
             "# Models Metadata",
@@ -374,7 +374,7 @@ class TestMetaDB(unittest.TestCase):
         self.db.close()
 
         self.assertIsInstance(line, list)
-        self.assertNotEqual(int(meta.get("offset")), int(self.db.meta.get("offset")))
+        self.assertNotEqual(int(meta.get("Offset")), int(self.db.meta.get("Offset")))
 
     def test_full_functionality(self):
         # Mock data
@@ -450,4 +450,6 @@ class TestMetaDB(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    # Test Forcedb functionality(getmetadata function)
+    # Test get_db_filepath function
     unittest.main()

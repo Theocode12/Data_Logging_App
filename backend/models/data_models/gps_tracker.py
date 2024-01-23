@@ -1,6 +1,6 @@
 from models.exceptions.exception import GPSConnectionError, GPSDataError
 from typing import Dict, Optional
-from models.data_models import BaseModelLogger
+from models import ModelLogger
 import gpsd
 
 
@@ -16,8 +16,7 @@ class GPSTracker:
             "altitude": None,
             "speed": None,
         }
-        self.gps_logger = logger or BaseModelLogger("data_models.gps_tracker")
-        self.gps_logger.customiseLogger()
+        self.gps_logger = logger or ModelLogger("gps_tracker").customiseLogger()
         self.gps_logger.debug("GPSTracker Models logger started")
 
     def connect(self) -> None:
