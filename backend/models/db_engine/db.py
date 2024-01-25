@@ -13,6 +13,7 @@ from util import get_base_path, convert_to_int_or_leave_unchanged
 import os
 import io
 
+
 class DBlogger:
     logger = ModelLogger("db").customiseLogger()
 
@@ -36,7 +37,7 @@ class FileDB:
         self.target = None
         self.fd: io.TextIOWrapper = None
 
-    def __enter__(self)-> 'FileDB':
+    def __enter__(self) -> "FileDB":
         """
         Enter the context manager. Open the file for reading and writing.
 
@@ -57,7 +58,9 @@ class FileDB:
         """
         self.close()
         if exc_type is not None:
-            DBlogger.logger.critical("Exception Trying to Access File {}: {}".format(exc_type, exc_value))
+            DBlogger.logger.critical(
+                "Exception Trying to Access File {}: {}".format(exc_type, exc_value)
+            )
 
     def create_dir(self, dir: str) -> str:
         """
@@ -170,7 +173,6 @@ class FileDB:
         self.create_dir(dir)
         return os.path.join(dir, f"{day:02d}.txt")
 
-
     def set_target(self, path) -> str:
         """
         Set the target file path for the database.
@@ -274,7 +276,9 @@ class FileDB:
             if self.fd:
                 line = self.fd.readline()
         except Exception:
-            DBlogger.logger.error("Error reading line from file: {}".format(self.target))
+            DBlogger.logger.error(
+                "Error reading line from file: {}".format(self.target)
+            )
             raise FileReadError("Error reading line from file: {}".format(self.target))
         return line
 
@@ -293,7 +297,9 @@ class FileDB:
             if self.fd:
                 lines = self.fd.readlines()
         except Exception:
-            DBlogger.logger.error("Error reading lines from file: {}".format(self.target))
+            DBlogger.logger.error(
+                "Error reading lines from file: {}".format(self.target)
+            )
             raise FileReadError("Error reading lines from file: {}".format(self.target))
         return lines
 
@@ -481,4 +487,3 @@ class MetaDB(FileDB):
         """
 
         return os.path.join("{}".format(get_base_path()), "config", "meta.txt")
-

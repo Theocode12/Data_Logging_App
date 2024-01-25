@@ -26,6 +26,7 @@ class BaseLogger(logging.Logger):
         stream_handler.setFormatter(self.getFormatter())
         self.addHandler(stream_handler)
 
+
 class LogDisabledContext:
     def __enter__(self):
         # Save the original log level
@@ -36,6 +37,7 @@ class LogDisabledContext:
     def __exit__(self, exc_type, exc_value, traceback):
         # Restore the original log level
         logging.disable(self.original_log_level)
+
 
 if __name__ == "__main__":
     logger = BaseLogger("test")

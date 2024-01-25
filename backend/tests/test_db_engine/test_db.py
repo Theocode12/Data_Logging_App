@@ -8,6 +8,8 @@ import tempfile
 import os
 
 logging.disable(logging.CRITICAL)
+
+
 class TestFileDB(unittest.TestCase):
     def setUp(self):
         self.tmpdir = tempfile.TemporaryDirectory()
@@ -30,7 +32,6 @@ class TestFileDB(unittest.TestCase):
         self.db.delete_file(path)
         self.assertFalse(os.path.exists(path))
 
-
     def test_get_db_filepath(self):
         now = datetime.now()
         year, month, day = now.year, now.month, now.day
@@ -40,7 +41,6 @@ class TestFileDB(unittest.TestCase):
         )
         path = self.db.get_db_filepath()
         self.assertEqual(path, true_path)
-
 
     def test_create_file_without_path(self):
         true_path = self.db.get_db_filepath()
@@ -156,7 +156,9 @@ class TestMetaDB(unittest.TestCase):
         self.assertDictEqual(self.db.meta, {})
 
     def test_get_metadata_path(self):
-        expected_path = os.path.join("".join([os.getcwd().split("backend")[0], "backend"]), "config", "meta.txt")
+        expected_path = os.path.join(
+            "".join([os.getcwd().split("backend")[0], "backend"]), "config", "meta.txt"
+        )
         path = self.db.get_metadata_path()
         self.assertEqual(expected_path, path)
 
@@ -172,7 +174,6 @@ class TestMetaDB(unittest.TestCase):
         self.db.update_metadata(newmeta)
         meta.update(newmeta)
         self.assertDictEqual(self.db.meta, meta)
-
 
     def test_retrieve_metadata_lines(self):
         # create temporary directory and file

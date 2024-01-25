@@ -213,7 +213,11 @@ class CloudTransferManager:
         )
         last_upload_filepath = metadata.get("LastUploadFile")
 
-        if last_upload_filepath is not None and last_upload_filepath and self._is_connected():
+        if (
+            last_upload_filepath is not None
+            and last_upload_filepath
+            and self._is_connected()
+        ):
             last_upload_date = last_upload_filepath.replace(db_path, "")
             files = self.get_unuploaded_files(last_upload_date.split("/"), db_path)
             self.upload_files(db_path, files)
