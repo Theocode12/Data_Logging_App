@@ -95,10 +95,11 @@ class DataCollectionManager:
         db_path = self.database.create_file()
         self.database.set_target(db_path)
 
+    # fix the collected _data: its not supposed to be a dictionary
     def save_collected_data(self) -> None:
         """Save the collected data to the database."""
         with self.database as db:
-            db.write(self.collected_data)
+            db.write_data_line(self.collected_data)
         self.clear_collected_data()
 
     def run(self):

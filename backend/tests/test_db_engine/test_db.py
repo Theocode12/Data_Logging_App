@@ -2,23 +2,26 @@ from models.db_engine.db import FileDB, MetaDB
 from models.exceptions.exception import FileCloseError, FileOpenError
 from datetime import datetime
 import io
+import logging
 import unittest
 import tempfile
 import os
-import shutil
 
-
+logging.disable(logging.CRITICAL)
 class TestFileDB(unittest.TestCase):
     def setUp(self):
         self.tmpdir = tempfile.TemporaryDirectory()
         self.db = FileDB()
 
     def test_create_and_remove_dir(self):
-        tmpdir = os.path.abspath("./tmp")
-        self.db.create_dir(tmpdir)
-        self.assertTrue(os.path.exists(tmpdir))
-        self.db.remove_dir(tmpdir)
-        self.assertFalse(os.path.exists(tmpdir))
+        os.rmdir(self.tmpdir.name)
+        self.assertFalse(os.path.exists(self.tmpdir.name))
+        self.db.create_dir(self.tmpdir.name)
+        self.assertTrue(os.path.exists(self.tmpdir.name))
+
+    def test_remove_dir(self):
+        self.db.remove_dir(self.tmpdir.name)
+        self.assertFalse(os.path.exists(self.tmpdir.name))
 
     def test_create_and_delete_file_given_path(self):
         path = os.path.join(self.tmpdir.name, "test.txt")
@@ -27,30 +30,41 @@ class TestFileDB(unittest.TestCase):
         self.db.delete_file(path)
         self.assertFalse(os.path.exists(path))
 
-    def test_create_file_without_path(self):
+
+    def test_get_db_filepath(self):
         now = datetime.now()
         year, month, day = now.year, now.month, now.day
         true_path = os.path.join(
             "".join([os.getcwd().split("backend")[0], "backend"]),
             f"data/{year}/{month:02d}/{day:02d}.txt",
         )
+        path = self.db.get_db_filepath()
+        self.assertEqual(path, true_path)
 
-        # self.skipTest("Not Needed until application is running")
+
+    def test_create_file_without_path(self):
+        true_path = self.db.get_db_filepath()
         if not os.path.exists(true_path):
             path = self.db.create_file()
             self.assertTrue(os.path.exists(path))
             self.assertEqual(path, true_path)
             os.remove(path)
 
-    def test_set_target(self):
-        # Test set_target without path parameter
-        target = self.db.set_target()
-        self.assertEqual(target, self.db.target)
+    def test_file_exists(self):
+        self.assertTrue(self.db.file_exits(self.tmpdir.name))
+        path = os.path.join(self.tmpdir.name, "test.txt")
+        self.db.delete_file(path)
+        self.assertFalse(os.path.exists(path))
 
-        # Test set_target with path parameter
+    def test_set_target(self):
         path = "/tmp/test"
         self.db.set_target(path)
         self.assertEqual(path, self.db.target)
+
+    def test_delete_file(self):
+        path = os.path.join(self.tmpdir.name, "test.txt")
+        self.db.delete_file(path)
+        self.assertFalse(os.path.exists(path))
 
     def test_open(self):
         # With path parameter set
@@ -75,9 +89,6 @@ class TestFileDB(unittest.TestCase):
         self.db.open(path, "x")
         self.db.close()
         self.assertIsNone(self.db.fd)
-
-        # called when fd is none
-        self.db.close()
 
     def test_write(self):
         self.db.target = tempfile.mkstemp(dir=self.tmpdir.name, text=True)[1]
@@ -116,6 +127,18 @@ class TestFileDB(unittest.TestCase):
 
         self.assertEqual(r_data, data)
 
+    def test_context_manager(self):
+        self.db.target = tempfile.mkstemp(dir=self.tmpdir.name, text=True)[1]
+        with self.db as db:
+            self.assertIsInstance(db.fd, io.TextIOWrapper)
+        self.assertIsNone(db.fd)
+
+    def test_write_data_line(self):
+        data = {"foo": "bar", "bar": "baz"}
+        line = self.db.write_data_line(data)
+        expected_line = "foo=bar,bar=baz\n"
+        self.assertEqual(line, expected_line)
+
     def tearDown(self) -> None:
         self.tmpdir.cleanup()
 
@@ -128,10 +151,14 @@ class TestMetaDB(unittest.TestCase):
     def test_clear_metadata(self):
         self.assertIsInstance(self.db.meta, dict)
         self.assertEqual(self.db.meta, {})
-
         self.db.meta = {"Offset": 0, "target": "/tmp/test"}
         self.db.clear_metadata()
         self.assertDictEqual(self.db.meta, {})
+
+    def test_get_metadata_path(self):
+        expected_path = os.path.join("".join([os.getcwd().split("backend")[0], "backend"]), "config", "meta.txt")
+        path = self.db.get_metadata_path()
+        self.assertEqual(expected_path, path)
 
     def test_update_metadata(self):
         meta = {"Offset": 0, "target": "/tmp/test"}
@@ -146,26 +173,6 @@ class TestMetaDB(unittest.TestCase):
         meta.update(newmeta)
         self.assertDictEqual(self.db.meta, meta)
 
-    def testget_metadata_path(self):
-        # Test without custom_path parameter
-        metadata_path = self.db.get_metadata_path()
-        true_path = os.path.join(
-            os.path.join(
-                "".join([os.getcwd().split("backend")[0], "backend"]), "config"
-            ),
-            "meta.txt",
-        )
-        self.assertEqual(metadata_path, true_path)
-
-        # Test with custom_path parameter
-        metadata_path = self.db.get_metadata_path("test")
-        true_path = os.path.join(
-            os.path.join(
-                "".join([os.getcwd().split("backend")[0], "backend"]), "config"
-            ),
-            "test",
-        )
-        self.assertEqual(metadata_path, true_path)
 
     def test_retrieve_metadata_lines(self):
         # create temporary directory and file

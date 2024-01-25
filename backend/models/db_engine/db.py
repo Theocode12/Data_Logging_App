@@ -6,45 +6,15 @@ from models.exceptions.exception import (
     CreateDirectoryError,
     RemoveDirectoryError,
 )
+from models import ModelLogger
 from typing import Optional, Dict, List, Any, Union, Tuple
 from datetime import datetime
-from utils import get_base_path
+from util import get_base_path, convert_to_int_or_leave_unchanged
 import os
 import io
 
-
-class DBManager:
-    meta = ""
-
-    def __init__(self, lock=None):
-        self.lock = lock
-        self.db = FileDB()
-        self.target = None
-
-    def write(self, data):
-        if not self.target:
-            self._set_tagert()
-        # Aquire the lock
-        with open(self.target, mode="r+") as fd:
-            fd.write(data)
-        # Release the lock
-
-    def read(self, *meta):
-        pass
-
-    def open(self, filename, mode):
-        self.db.open(filename, mode)
-
-    def close(self):
-        self.db.close()
-
-    def _set_tagert(self):
-        self.target = self.db.init_file()
-
-
-# New Idea: So i'm thinking of a way of writing or reading to file using an Open api from the which returns a file
-# file descriptor for the file and we can read or write data to it. I want DB manager to handle this
-# functionality.
+class DBlogger:
+    logger = ModelLogger("db").customiseLogger()
 
 
 class FileDB:
@@ -62,60 +32,87 @@ class FileDB:
         Attributes:
         - target: The target file path.
         - fd: The file descriptor for the open file.
-        - meta: A dictionary to store metadata.
         """
         self.target = None
         self.fd: io.TextIOWrapper = None
 
-    def __enter__(self):
+    def __enter__(self)-> 'FileDB':
+        """
+        Enter the context manager. Open the file for reading and writing.
+
+        Returns:
+        The FileDB instance.
+        """
         self.open(mode="r+")
         return self
 
-    def __exit__(self, exc_type, exc_value, trace):
-        self.close()
-        # use our custom logger here to handle exceptions
+    def __exit__(self, exc_type, exc_value, trace) -> None:
+        """
+        Exit the context manager. Close the file.
 
-    def create_dir(self, dir: Optional[str] = None) -> str:
+        Args:
+        - exc_type: The exception type.
+        - exc_value: The exception value.
+        - trace: The traceback.
+        """
+        self.close()
+        if exc_type is not None:
+            DBlogger.logger.critical("Exception Trying to Access File {}: {}".format(exc_type, exc_value))
+
+    def create_dir(self, dir: str) -> str:
         """
         Create a directory.
 
         Args:
-        - dir: The directory path.
+        - dir (str): The directory path.
 
         Returns:
         The created directory path.
 
         Raises:
-        - Exception: If an error occurs while creating the directory.
+        - CreateDirectoryError: If an error occurs while creating the directory.
         """
         if dir:
             try:
                 os.makedirs(dir, exist_ok=True)
+                DBlogger.logger.info("Directory created/exists: {}".format(dir))
             except Exception as e:
                 raise CreateDirectoryError("Failed to create directory: {}".format(dir))
         return dir
 
-    def remove_dir(self, dir):
+    def remove_dir(self, dir: str) -> str:
+        """
+        Remove a directory.
+
+        Args:
+        - dir (str): The directory path.
+
+        Returns:
+        The removed directory path.
+
+        Raises:
+        - RemoveDirectoryError: If an error occurs while removing the directory.
+        """
         if dir:
             try:
                 os.rmdir(dir)
+                DBlogger.logger.info("Directory removed: {}".format(dir))
             except Exception as e:
                 raise RemoveDirectoryError("Failed to remove directory: {}".format(dir))
         return dir
 
-    # Refactor the created out of this function
     def create_file(self, path: Optional[str] = None) -> str:
         """
         Create a file.
 
         Args:
-        - path: The file path.
+        - path (Optional[str]): The file path.
 
         Returns:
         The created file path.
 
         Raises:
-        - Exception: If an error occurs while creating the file.
+        - FileOpenError: If an error occurs while creating or opening the file.
         """
         if not path:
             path = self.get_db_filepath()
@@ -124,15 +121,44 @@ class FileDB:
             try:
                 self.open(path, "x")
                 self.write("")
-                # Log file creation
             finally:
                 self.close()
+                DBlogger.logger.info("File Created: {}".format(path))
         return path
 
+    def delete_file(self, path: str) -> None:
+        """
+        Delete a file.
+
+        Args:
+        - path (str): The file path.
+        """
+        if self.file_exits(path):
+            try:
+                os.remove(path)
+                DBlogger.logger.info("Deleted file: {}".format(path))
+            except Exception:
+                pass
+
     def file_exits(self, path: str) -> bool:
+        """
+        Check if a file exists.
+
+        Args:
+        - path (str): The file path.
+
+        Returns:
+        True if the file exists, False otherwise.
+        """
         return os.path.exists(path)
 
     def get_db_filepath(self) -> str:
+        """
+        Get the file path for the database based on the current date.
+
+        Returns:
+        The generated file path.
+        """
         now = datetime.now()
         year, month, day = now.year, now.month, now.day
 
@@ -144,45 +170,34 @@ class FileDB:
         self.create_dir(dir)
         return os.path.join(dir, f"{day:02d}.txt")
 
-    def delete_file(self, path):
-        if os.path.exists(path):
-            try:
-                os.remove(path)
-            except Exception:
-                pass
 
     def set_target(self, path) -> str:
         """
         Set the target file path for the database.
-
-        If no target path is provided, a new file path is generated using the current date.
 
         Args:
         - path: The target file path.
 
         Returns:
         The target file path.
-
-        Raises:
-        - Exception: If an error occurs while creating the file.
         """
         self.close()  # For safety because fd doesn't correspond to target
         self.target = path
         return self.target
 
-    def open(self, path: str = None, mode: str = "r+") -> io.TextIOWrapper:
+    def open(self, path: Optional[str] = None, mode: str = "r+") -> io.TextIOWrapper:
         """
         Open a file for reading or writing.
 
         Args:
-        - path: The path to the file. if None, self.target is used
-        - mode: The mode in which to open the file ('r' for reading, 'w' for writing, etc.).
+        - path (Optional[str]): The path to the file. If None, self.target is used.
+        - mode (str): The mode in which to open the file ('r' for reading, 'w' for writing, etc.).
 
         Returns:
         The file descriptor.
 
         Raises:
-        - Exception: If an error occurs while opening the file.
+        - FileOpenError: If an error occurs while opening the file.
         """
         if path:
             self.set_target(path)
@@ -197,7 +212,7 @@ class FileDB:
         Close the currently open file.
 
         Raises:
-        - Exception: If an error occurs while closing the file.
+        - FileCloseError: If an error occurs while closing the file.
         """
         try:
             if self.fd:
@@ -211,25 +226,38 @@ class FileDB:
         Write data to the open file.
 
         Args:
-        - data: The data to write to the file.
+        - data (str): The data to write to the file.
 
         Returns:
-        - int: The number of bytes written(Approximatly)
+        The number of bytes written.
 
         Raises:
-        - Exception: If an error occurs while writing to the file.
+        - FileWriteError: If an error occurs while writing to the file.
         """
         try:
             if self.fd:
                 self.fd.write(data)
-        except Exception as e:
+        except Exception:
+            DBlogger.logger.error("Error writing to file: {}".format(self.target))
             raise FileWriteError("Error writing to file: {}".format(self.target))
 
-        return len(data)
+        return data
 
     def write_data_line(self, data: Dict[str, Any]) -> int:
+        """
+        Write a dictionary as a line to the open file.
+
+        Args:
+        - data (Dict[str, Any]): The data to write as a line.
+
+        Returns:
+        The number of bytes written.
+
+        Raises:
+        - FileWriteError: If an error occurs while writing to the file.
+        """
         line = ",".join([f"{key}={value}" for key, value in data.items()])
-        self.write(line + "\n")
+        return self.write(line + "\n")
 
     def readline(self) -> str:
         """
@@ -239,13 +267,14 @@ class FileDB:
         The read line.
 
         Raises:
-        - Exception: If an error occurs while reading from the file.
+        - FileReadError: If an error occurs while reading from the file.
         """
         line = None
         try:
             if self.fd:
                 line = self.fd.readline()
-        except Exception as e:
+        except Exception:
+            DBlogger.logger.error("Error reading line from file: {}".format(self.target))
             raise FileReadError("Error reading line from file: {}".format(self.target))
         return line
 
@@ -254,21 +283,26 @@ class FileDB:
         Read all lines from the open file.
 
         Returns:
-        The read line.
+        The read lines.
 
         Raises:
-        - Exception: If an error occurs while reading from the file.
+        - FileReadError: If an error occurs while reading from the file.
         """
         lines = []
         try:
-            lines = self.fd.readlines()
-        except Exception as e:
+            if self.fd:
+                lines = self.fd.readlines()
+        except Exception:
+            DBlogger.logger.error("Error reading lines from file: {}".format(self.target))
             raise FileReadError("Error reading lines from file: {}".format(self.target))
         return lines
 
 
 class MetaDB(FileDB):
-    metadata_lines: List[str] = []
+    """
+    MetaDB is a class representing a metadata database that extends FileDB.
+    It provides methods for retrieving, updating, saving, and clearing metadata.
+    """
 
     def __init__(self):
         """
@@ -276,8 +310,10 @@ class MetaDB(FileDB):
 
         Attributes:
         - meta: A dictionary to store metadata.
+        - metadata_lines: A list of lines in the metadata
         """
         self.meta = {}
+        self.metadata_lines: List[str] = []
         super().__init__()
 
     def retrieve_metadata_lines(
@@ -287,7 +323,8 @@ class MetaDB(FileDB):
         Retrieve lines from a metadata file.
 
         Args:
-        - path: The optional path to the metadata file.
+        - path (Optional[str]): The optional path to the metadata file.
+        - forcedb (bool): Whether to force querying the database.
 
         Returns:
         A list of lines from the metadata file.
@@ -295,13 +332,12 @@ class MetaDB(FileDB):
         if not path:
             path = self.get_metadata_path(path)
         if forcedb:
-            try:
-                self.open(path, "r")
+            self.set_target(path)
+            with self:
                 self.metadata_lines = [
                     line.rstrip("\n") for line in super().readlines()
                 ]
-            finally:
-                self.close()
+
         return self.metadata_lines
 
     def update_metadata_lines(self, meta: Dict[str, Any] = {}) -> List[str]:
@@ -309,7 +345,7 @@ class MetaDB(FileDB):
         Update lines in the metadata file with provided metadata.
 
         Args:
-        - meta: Key-value pairs to update in the metadata.
+        - meta (Dict): Key-value pairs to update in the metadata.
 
         Returns:
         The updated list of lines from the metadata file.
@@ -333,14 +369,13 @@ class MetaDB(FileDB):
         Retrieve metadata from a file.
 
         Args:
-        - path: The optional path to the metadata file.
-        - meta: Optional keys to retrieve from the metadata_lines.
+        - path (Optional[str]): The optional path to the metadata file.
+        - meta (List[str]): Optional keys to retrieve from the metadata_lines.
+        - forcedb (bool): Whether to force query the database.
 
         Returns:
         The retrieved metadata.
 
-        Raises:
-        - Exception: If an error occurs while retrieving the metadata.
         """
 
         lines = self.retrieve_metadata_lines(path, forcedb)
@@ -360,8 +395,8 @@ class MetaDB(FileDB):
         The metadata is updated with the provided key-value pairs, and the updated metadata is saved to a file.
 
         Args:
-        - path: The optional path to the metadata file.
-        - meta: Key-value pairs to update in the metadata.
+        - path (Optional[str]): The optional path to the metadata file.
+        - meta (Dict): Key-value pairs to update in the metadata.
 
         Raises:
         - Exception: If an error occurs while saving the metadata.
@@ -371,13 +406,11 @@ class MetaDB(FileDB):
 
         if self.file_exits(path):
             self.retrieve_metadata_lines(path)
-        try:
-            self.open(path, "w")
+
+        with self as db:
             for line in self.update_metadata_lines(meta):
-                self.write(line + "\n")
-        finally:
-            self.close()
-        # Log save metadata
+                db.write(line + "\n")
+        DBlogger.logger.info("Updated metadata saved to file")
 
     def clear_metadata(self) -> None:
         """
@@ -395,7 +428,7 @@ class MetaDB(FileDB):
         Update the metadata with the provided key-value pairs.
 
         Args:
-        - newmeta: Key-value pairs to update in the metadata.
+        - newmeta (Dict): Key-value pairs to update in the metadata.
 
         Returns:
         The updated metadata.
@@ -409,7 +442,7 @@ class MetaDB(FileDB):
         Read all lines from the open file.
 
         Args:
-        - offset: Metadata to determine the file offset.
+        - offset (int): Metadata to determine the file offset.
 
         Returns:
         The read line.
@@ -418,7 +451,7 @@ class MetaDB(FileDB):
         - Exception: If an error occurs while reading from the file.
         """
 
-        self.fd.seek(offset or int(self.meta.get("Offset", 0)))
+        self.fd.seek(offset or self.meta.get("Offset", 0))
         line = super().readline()
         self.update_metadata({"Offset": self.fd.tell()})
         return line
@@ -428,7 +461,7 @@ class MetaDB(FileDB):
         Read all lines from the open file.
 
         Args:
-        - offset: Metadata to determine the file offset.
+        - offset (int): Metadata to determine the file offset.
 
         Returns:
         The list of read lines.
@@ -439,12 +472,9 @@ class MetaDB(FileDB):
         self.update_metadata({"Offset": self.fd.tell()})
         return lines
 
-    def get_metadata_path(self, custom_path: Optional[str] = None) -> str:
+    def get_metadata_path(self) -> str:
         """
         Get the path to the metadata file.
-
-        Args:
-        - custom_path: The optional custom path to the metadata file.
 
         Returns:
         The path to the metadata file.
@@ -452,18 +482,3 @@ class MetaDB(FileDB):
 
         return os.path.join("{}".format(get_base_path()), "config", "meta.txt")
 
-
-def convert_to_int_or_leave_unchanged(value: str) -> Union[int, str]:
-    """
-    Attempt to convert a string to an integer. If successful, return the integer;
-    otherwise, return the original string.
-
-    Args:
-    - value (str): The input string.
-
-    Returns:
-    - Union[int, str]: The converted integer or the original string.
-    """
-    if value.isdigit():
-        return int(value)
-    return value

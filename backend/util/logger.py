@@ -1,5 +1,5 @@
 import logging
-from utils import get_base_path
+from util import get_base_path
 import os
 
 
@@ -26,6 +26,16 @@ class BaseLogger(logging.Logger):
         stream_handler.setFormatter(self.getFormatter())
         self.addHandler(stream_handler)
 
+class LogDisabledContext:
+    def __enter__(self):
+        # Save the original log level
+        self.original_log_level = logging.root.manager.disable
+        # Temporarily disable logging
+        logging.disable(logging.CRITICAL)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # Restore the original log level
+        logging.disable(self.original_log_level)
 
 if __name__ == "__main__":
     logger = BaseLogger("test")

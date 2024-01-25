@@ -10,27 +10,29 @@ from models.exceptions.exception import (
 from models.db_engine.db import MetaDB
 from models import ModelLogger
 from typing import List, Dict, Union, Optional
-from utils import get_base_path, is_internet_connected
+from util import get_base_path, is_internet_connected
 import sys
 import json
 import os
 
-logger = ModelLogger("cloud-transfer").customiseLogger()
+CTFlogger = ModelLogger("cloud-transfer").customiseLogger(
+    filename=os.path.join("{}".format(get_base_path()), "logs", "cloud_transfer.log")
+)
 
 
 def on_connection_interrupted(connection, error, **kwargs):
-    logger.error("Connection interrupted. error: {}".format(error))
+    CTFlogger.error("Connection interrupted. error: {}".format(error))
 
 
 def on_connection_resumed(connection, return_code, session_present, **kwargs):
-    logger.info(
+    CTFlogger.info(
         "Connection resumed. return_code: {} session_present: {}".format(
             return_code, session_present
         )
     )
 
     if return_code == mqtt.ConnectReturnCode.ACCEPTED and not session_present:
-        logger.info("Session did not persist. Resubscribing to existing topics...")
+        CTFlogger.info("Session did not persist. Resubscribing to existing topics...")
         resubscribe_future, _ = connection.resubscribe_existing_topics()
 
         # Cannot synchronously wait for resubscribe result because we're on the connection's event-loop thread,
@@ -40,7 +42,7 @@ def on_connection_resumed(connection, return_code, session_present, **kwargs):
 
 def on_resubscribe_complete(resubscribe_future):
     resubscribe_results = resubscribe_future.result()
-    logger.info("Resubscribe results: {}".format(resubscribe_results))
+    CTFlogger.info("Resubscribe results: {}".format(resubscribe_results))
 
     for topic, qos in resubscribe_results["topics"]:
         if qos is None:
@@ -48,12 +50,12 @@ def on_resubscribe_complete(resubscribe_future):
 
 
 def on_message_received(topic, payload, dup, qos, retain, **kwargs):
-    logger.info("Received message from topic '{}': {}".format(topic, payload))
+    CTFlogger.info("Received message from topic '{}': {}".format(topic, payload))
 
 
 def on_connection_success(connection, callback_data):
     assert isinstance(callback_data, mqtt.OnConnectionSuccessData)
-    logger.info(
+    CTFlogger.info(
         "Connection Successful with return code: {} session present: {}".format(
             callback_data.return_code, callback_data.session_present
         )
@@ -62,11 +64,13 @@ def on_connection_success(connection, callback_data):
 
 def on_connection_failure(connection, callback_data):
     assert isinstance(callback_data, mqtt.OnConnectionFailureData)
-    logger.warning("Connection failed with error code: {}".format(callback_data.error))
+    CTFlogger.warning(
+        "Connection failed with error code: {}".format(callback_data.error)
+    )
 
 
 def on_connection_closed(connection, callback_data):
-    logger.warning("Connection closed")
+    CTFlogger.warning("Connection closed")
 
 
 class CloudTransfer:
@@ -209,7 +213,7 @@ class CloudTransferManager:
         )
         last_upload_filepath = metadata.get("LastUploadFile")
 
-        if last_upload_filepath is not None and last_upload_filepath:
+        if last_upload_filepath is not None and last_upload_filepath and self._is_connected():
             last_upload_date = last_upload_filepath.replace(db_path, "")
             files = self.get_unuploaded_files(last_upload_date.split("/"), db_path)
             self.upload_files(db_path, files)
@@ -225,27 +229,44 @@ class CloudTransferManager:
         for file in files:
             filepath = os.path.join(base_path, file)
             try:
-                self.meta_db.set_target(filepath)
-                with self.meta_db as db:
-                    lines = db.readlines(self.meta_db.meta.get("Offset", 0))
-
+                self.upload_file(filepath)
             except (FileOpenError, AWSCloudConnectionError):
-                logger.error("File: {} Uploading Failed".format(filepath))
+                CTFlogger.error("File: {} Uploading Failed".format(filepath))
                 raise FileUploadError(f"Could not upload file: {filepath}")
 
-            else:
-                if is_internet_connected() and self.cloud_transfer.connected:
-                    for line in lines:
-                        data = modify_data_to_dict(line)
-                        self.cloud_transfer.publish(data)
-                    self.meta_db.save_metadata(
-                        meta={
-                            "LastUploadFile": filepath,
-                            "Offset": self.meta_db.meta.get("Offset", 0),
-                        }
-                    )
-                    self.meta_db.meta["Offset"] = None
-                    logger.info("File: {} Successfully uploaded".format(filepath))
+    def upload_file(self, filepath: str) -> None:
+        """
+        Upload the content of a file to the cloud.
+
+        Parameters:
+        - filepath (str): The path to the file.
+        """
+        self.meta_db.set_target(filepath)
+        with self.meta_db as db:
+            lines = db.readlines(self.meta_db.meta.get("Offset", 0))
+
+        if self._is_connected():
+            for line in lines:
+                data = modify_data_to_dict(line)
+                self.cloud_transfer.publish(data)
+
+            self.meta_db.save_metadata(
+                meta={
+                    "LastUploadFile": filepath,
+                    "Offset": self.meta_db.meta.get("Offset", 0),
+                }
+            )
+            self.meta_db.meta["Offset"] = None
+            CTFlogger.info("File: {} Successfully uploaded".format(filepath))
+
+    def _is_connected(self) -> bool:
+        """
+        Check if the cloud transfer is connected.
+
+        Returns:
+        - bool: True if connected, False otherwise.
+        """
+        return is_internet_connected() and self.cloud_transfer.connected
 
     def get_unuploaded_files(
         self, last_upload_file_date: List[str], db_path: str

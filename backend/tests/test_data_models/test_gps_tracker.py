@@ -12,7 +12,7 @@ class TestGpsTracker(unittest.TestCase):
 
     def setUp(self):
         self.logging_patch = patch(
-            "models.data_models.gps_tracker.BaseModelLogger", autospec=True
+            "models.data_models.gps_tracker.ModelLogger", autospec=True
         )
         self.mock_logging = self.logging_patch.start()
 

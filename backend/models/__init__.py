@@ -1,5 +1,5 @@
-from utils.logger import BaseLogger
-from utils import get_base_path
+from util.logger import BaseLogger
+from util import get_base_path
 import logging
 import os
 
