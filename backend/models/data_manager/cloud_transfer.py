@@ -332,19 +332,3 @@ def modify_data_to_dict(line: str) -> Dict[str, Union[str, float]]:
         param, value = datum.split("=")
         data_dict[param.strip()] = value.strip()
     return data_dict
-
-
-if __name__ == "__main__":
-    # ctf = CloudTransfer()
-    # # print(CloudTransfer.__dict__)
-
-    # ctf.connect()
-    # data = {"longitude": "181.11", "latitude": "89.002", "speed": "50.00"}
-    # for _ in range(100):
-    #     print("Publishing message to topic '{}': {}".format(ctf.message_topic, data))
-    #     ctf.publish(data)
-    # ctf.disconnect()
-    # LastUploadFile = ["2022", "03", "24.txt"]
-    # db_path = os.path.join("".join([os.getcwd().split("backend")[0], "backend"]), "data")
-    ctfm = CloudTransferManager()
-    # print(ctfm.get_unuploaded_files(LastUploadFile, db_path))
