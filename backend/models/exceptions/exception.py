@@ -38,5 +38,5 @@ class AWSCloudDisconnectError(Exception):
     pass
 
 
-class FileUploadError(Exception):
+class AWSCloudUploadError(Exception):
     pass
