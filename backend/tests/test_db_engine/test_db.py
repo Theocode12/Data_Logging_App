@@ -457,6 +457,10 @@ class TestMetaDB(unittest.TestCase):
         self.tmpdir.cleanup()
 
 
+class TestTestDB:
+    pass
+
+
 if __name__ == "__main__":
     # Test Forcedb functionality(getmetadata function)
     # Test get_db_filepath function

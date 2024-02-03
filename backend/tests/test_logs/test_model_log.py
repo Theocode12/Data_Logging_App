@@ -1,8 +1,7 @@
-from models.data_models.gps_tracker import (
+from models.sensors.gps import (
     GPSTracker,
     GPSConnectionError,
     GPSDataError,
-    gpsd,
 )
 from models import ModelLogger
 from unittest.mock import patch, Mock

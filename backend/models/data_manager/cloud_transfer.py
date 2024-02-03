@@ -1,6 +1,5 @@
 from awscrt import mqtt
 from awsiot import mqtt_connection_builder
-from dotenv import dotenv_values
 from models.exceptions.exception import (
     AWSCloudConnectionError,
     AWSCloudDisconnectError,
@@ -9,8 +8,9 @@ from models.exceptions.exception import (
 )
 from models.db_engine.db import MetaDB
 from models import ModelLogger
+from multiprocessing.connection import Connection
 from typing import List, Dict, Union, Optional
-from util import get_base_path, is_internet_connected
+from util import get_base_path, is_internet_connected, env_variables
 import sys
 import json
 import os
@@ -99,13 +99,12 @@ class CloudTransfer:
         self.connected = False
         self._load_env()
 
-    def _load_env(self) -> None:
+    @classmethod
+    def _load_env(cls) -> None:
         """
         Load environment variables from the .env file.
         """
-        env_path = os.path.join(get_base_path(), "config", ".env")
-        env_variables = dotenv_values(env_path)
-        for key, value in env_variables.items():
+        for key, value in env_variables().items():
             setattr(CloudTransfer, key, value)
 
     def connect(self) -> None:
@@ -322,7 +321,21 @@ class CloudTransferManager:
 
         return files_to_be_uploaded
 
-    def run(self):
+    def run(self, recv_cmd_pipe: Connection, data_pipe: Connection = None):
+        while True:
+            if recv_cmd_pipe.poll():
+                command = recv_cmd_pipe.recv()
+                if command == "STOP":
+                    break
+
+            if is_internet_connected():
+                try:
+                    self.cloud_transfer.connect()
+                except:
+                    break
+
+            # poll data from database and upload to cloud
+
         # check the offset value from meta
         # try reading the database and check if my tell value changes if yes
         # try: uploading the file contents

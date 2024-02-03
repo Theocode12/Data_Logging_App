@@ -1,10 +1,11 @@
-from models.exceptions.exception import GPSConnectionError, GPSDataError
 from typing import Dict, Optional
+from models.exceptions.exception import GPSConnectionError, GPSDataError
+from models.sensors.sensor import Sensor
 from models import ModelLogger
 import gpsd
 
 
-class GPSTracker:
+class GPS(Sensor):
     """This class implements a way of consistently getting the relevant gps data in dictionary format"""
 
     def __init__(self, logger=None) -> None:

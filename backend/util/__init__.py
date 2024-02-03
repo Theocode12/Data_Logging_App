@@ -1,4 +1,5 @@
-from typing import Union
+from dotenv import dotenv_values
+from typing import Union, Dict
 import os
 import subprocess
 
@@ -29,3 +30,12 @@ def convert_to_int_or_leave_unchanged(value: str) -> Union[int, str]:
     if value.isdigit():
         return int(value)
     return value
+
+
+def env_variables() -> Dict[str, str]:
+    """
+    Load environment variables from the .env file.
+    """
+    env_path = os.path.join(get_base_path(), "config", ".env")
+    env_variables = dotenv_values(env_path)
+    return env_variables

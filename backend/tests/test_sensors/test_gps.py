@@ -1,44 +1,40 @@
-from models.data_models import gps_tracker
+from models.sensors import gps
 from unittest.mock import patch, Mock
 import unittest
 import io
 import tracemalloc
 
 
-class TestGpsTracker(unittest.TestCase):
+class TestGPS(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         tracemalloc.start()
 
     def setUp(self):
-        self.logging_patch = patch(
-            "models.data_models.gps_tracker.ModelLogger", autospec=True
-        )
+        self.logging_patch = patch("models.sensors.gps.ModelLogger", autospec=True)
         self.mock_logging = self.logging_patch.start()
 
-        self.tracker = gps_tracker.GPSTracker()
+        self.tracker = gps.GPS()
 
         attrs = {
             "position.return_value": (-77.0364, 38.8951),
             "altitude.return_value": 30.433,
             "speed.return_value": 20.2,
         }
-        self.GPSResponse = Mock(spec_set=gps_tracker.gpsd.GpsResponse, **attrs)
+        self.GPSResponse = Mock(spec_set=gps.gpsd.GpsResponse, **attrs)
 
     def test_successful_gps_connection(self):
         """Simulate a successful connection to the GPS device"""
-        with patch.object(
-            gps_tracker.gpsd, "connect", return_value=None
-        ) as mock_method:
+        with patch.object(gps.gpsd, "connect", return_value=None) as mock_method:
             self.tracker.connect()
             mock_method.assert_called_once()
 
     def test_gps_connection_failure(self):
         """Simulate a failed connection to the GPS device"""
         with patch("sys.stderr", new_callable=io.StringIO), patch.object(
-            gps_tracker.gpsd, "connect", side_effect=gps_tracker.GPSConnectionError
+            gps.gpsd, "connect", side_effect=gps.GPSConnectionError
         ) as mock_method:
-            with self.assertRaises(gps_tracker.GPSConnectionError):
+            with self.assertRaises(gps.GPSConnectionError):
                 self.tracker.connect()
                 mock_method.assert_called_once()
 
@@ -59,7 +55,7 @@ class TestGpsTracker(unittest.TestCase):
     def test_gps_data_retrieval(self):
         """Test if GPS data is available"""
         with patch.object(
-            gps_tracker.gpsd, "get_current", return_value=self.GPSResponse
+            gps.gpsd, "get_current", return_value=self.GPSResponse
         ) as mock_method:
             self.tracker._pollGPSData()
             mock_method.assert_called_once()
@@ -67,9 +63,9 @@ class TestGpsTracker(unittest.TestCase):
     def test_exception_handling_in_gps_data_retrieval(self):
         """Test for failure in gathering of GPS data"""
         with patch("sys.stderr", new_callable=io.StringIO), patch.object(
-            gps_tracker.gpsd, "get_current", side_effect=gps_tracker.GPSDataError
+            gps.gpsd, "get_current", side_effect=gps.GPSDataError
         ) as mock_method:
-            with self.assertRaises(gps_tracker.GPSDataError):
+            with self.assertRaises(gps.GPSDataError):
                 self.tracker._pollGPSData()
                 mock_method.assert_called_once()
 
@@ -82,11 +78,11 @@ class TestGpsTracker(unittest.TestCase):
 
     def test_gps_connection_retry(self):
         with patch("sys.stderr", new_callable=io.StringIO), patch.object(
-            gps_tracker.gpsd,
+            gps.gpsd,
             "connect",
-            side_effect=[gps_tracker.GPSConnectionError, None],
+            side_effect=[gps.GPSConnectionError, None],
         ) as mock_method:
-            with self.assertRaises(gps_tracker.GPSConnectionError):
+            with self.assertRaises(gps.GPSConnectionError):
                 self.tracker.connect()
             self.tracker.connect()
             self.assertEqual(mock_method.call_count, 2)

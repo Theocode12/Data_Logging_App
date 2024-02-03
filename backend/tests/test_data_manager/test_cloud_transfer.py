@@ -96,24 +96,15 @@ class TestCloudTransfer(unittest.TestCase):
         )
 
     @patch(
-        "models.data_manager.cloud_transfer.os.path.join", return_value="/fake/env/path"
-    )
-    @patch(
-        "models.data_manager.cloud_transfer.dotenv_values",
+        "models.data_manager.cloud_transfer.env_variables",
         return_value={
             "endpoint": "fake_endpoint",
             "cert_filepath": "fake_cert_filepath",
         },
     )
-    @patch(
-        "models.data_manager.cloud_transfer.get_base_path",
-        return_value="/fake/base/path",
-    )
-    def test_load_env(self, mock_get_base_path, mock_dotenv_values, mock_os_path_join):
+    def test_load_env(self, mock_env_variables):
         self.cloud_transfer._load_env()
-        mock_get_base_path.assert_called_once()
-        mock_os_path_join.assert_called_once_with("/fake/base/path", "config", ".env")
-        mock_dotenv_values.assert_called_once_with("/fake/env/path")
+        mock_env_variables.assert_called_once()
         self.assertEqual(self.cloud_transfer.endpoint, "fake_endpoint")
         self.assertEqual(self.cloud_transfer.cert_filepath, "fake_cert_filepath")
 
@@ -170,7 +161,7 @@ class TestCloudTransferManager(unittest.TestCase):
             # Assert
             mock_is_internet_connected.assert_called_once()
             manager._is_connected.assert_called_once()
-            manager.meta_db.set_target.assert_called_once_with("/fake/file/path.txt")
+            manager.meta_db.set_target.assert_any_call("/fake/file/path.txt")
             manager.meta_db.readlines.assert_called_once_with(0)
             mock_modify_data_to_dict.assert_called_once_with("line1")
             manager.cloud_transfer.publish.assert_called_once_with({"key": "value"})

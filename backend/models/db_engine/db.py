@@ -9,7 +9,7 @@ from models.exceptions.exception import (
 from models import ModelLogger
 from typing import Optional, Dict, List, Any, Union, Tuple
 from datetime import datetime
-from util import get_base_path, convert_to_int_or_leave_unchanged
+from util import get_base_path, convert_to_int_or_leave_unchanged, env_variables
 import os
 import io
 
@@ -26,7 +26,9 @@ class FileDB:
     It provides methods for opening, closing, reading, and writing to files, as well as managing metadata.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self, target: Optional[str] = None, mode: Optional[str] = None
+    ) -> None:
         """
         Initialize the DB instance.
 
@@ -34,8 +36,9 @@ class FileDB:
         - target: The target file path.
         - fd: The file descriptor for the open file.
         """
-        self.target = None
+        self.target = target
         self.fd: io.TextIOWrapper = None
+        self.mode = mode
 
     def __enter__(self) -> "FileDB":
         """
@@ -44,7 +47,10 @@ class FileDB:
         Returns:
         The FileDB instance.
         """
-        self.open(mode="r+")
+        self.open(
+            path=self.target,
+            mode=self.mode or "r+",
+        )
         return self
 
     def __exit__(self, exc_type, exc_value, trace) -> None:
@@ -121,12 +127,11 @@ class FileDB:
             path = self.get_db_filepath()
 
         if not self.file_exits(path):
-            try:
-                self.open(path, "x")
-                self.write("")
-            finally:
-                self.close()
-                DBlogger.logger.info("File Created: {}".format(path))
+            with FileDB(path, "x") as db:
+                db.write("")
+
+            DBlogger.logger.info("File Created: {}".format(path))
+
         return path
 
     def delete_file(self, path: str) -> None:
@@ -204,6 +209,7 @@ class FileDB:
         if path:
             self.set_target(path)
         try:
+
             self.fd = open(self.target, mode)
         except Exception as e:
             raise FileOpenError("Error opening file: {}".format(self.target))
@@ -487,3 +493,38 @@ class MetaDB(FileDB):
         """
 
         return os.path.join("{}".format(get_base_path()), "config", "meta.txt")
+
+
+class TempDB:
+    MAX_DB_LINES = 20
+    MIN_DB_LINES = 2
+
+    def __init__(self):
+        self.tmp_db_path = self.get_tmp_db_path()
+
+    def get_current_db_lines(self):
+        with FileDB(self.tmp_db_path, "r") as db:
+            lines = db.readlines()
+        return len(lines)
+
+    def get_tmp_db_path(self) -> str:
+        try:
+            return env_variables()["tmp_db_path"]
+        except:
+            raise ValueError("No tmp_db in Environment variable")
+
+    def save_to_tmp_db(self, data):
+        with FileDB(self.tmp_db_path, "a") as db:
+            db.write_data_line(data)
+
+    def clean_up_tmp_db(self):
+        try:
+            with FileDB(self.tmp_db_path, "r") as db:
+                lines = db.readlines()
+                lines_to_keep = lines[-TempDB.MIN_DB_LINES :]
+
+                with FileDB(self.tmp_db_path, "w") as db:
+                    for line in lines_to_keep:
+                        db.write(line)
+        except Exception as e:
+            DBlogger.logger.info("Failed To clean Up Temp file")
