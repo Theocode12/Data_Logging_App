@@ -14,10 +14,6 @@ class Manager:
     send_cmd_aws, recv_cmd_aws = Pipe()
     send_data_sdm, recv_data_dsa = Pipe()
 
-
-
-
-
     class CommandHandler:
         def __init__(self):
             self.command_map = {
@@ -34,6 +30,7 @@ class Manager:
                 return self.command_map[command](*args, **kwargs)
             else:
                 print(f"Unknown command: {command}")
+
 
 # after a command is called a dict with some metadata like process and status
 if __name__ == "__main__":
