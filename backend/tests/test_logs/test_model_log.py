@@ -1,5 +1,5 @@
 from models.sensors.gps import (
-    GPSTracker,
+    GPS,
     GPSConnectionError,
     GPSDataError,
 )
@@ -12,7 +12,7 @@ import logging
 import tracemalloc
 
 
-class TestGPSTrackerLogging(unittest.TestCase):
+class TestGPSLogging(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         tracemalloc.start()
@@ -20,8 +20,8 @@ class TestGPSTrackerLogging(unittest.TestCase):
     def setUp(self):
 
         ModelLogger.__bases__ = (Fake.imitate(BaseLogger, logging.Logger),)
-        self.logger = ModelLogger("data_models.gps_tracker").customiseLogger()
-        self.tracker = GPSTracker(self.logger)
+        self.logger = ModelLogger("models.sensors.gps").customiseLogger()
+        self.tracker = GPS(self.logger)
 
     def test_logging_level(self):
         self.logger.setLevel.assert_any_call(logging.DEBUG)
@@ -41,18 +41,18 @@ class TestGPSTrackerLogging(unittest.TestCase):
 
     def test_log_initialization_message(self):
         with patch(
-            "models.data_models.gps_tracker.ModelLogger", autospec=True
+            "models.sensors.gps.ModelLogger", autospec=True
         ) as mock_base_logger:
-            GPSTracker()
+            GPS()
             mock_base_logger.return_value.debug.assert_called_once_with(
-                "GPSTracker Models logger started"
+                "GPS Models logger started"
             )
 
     def test_logger_name(self):
         with patch(
-            "models.data_models.gps_tracker.ModelLogger", autospec=True
+            "models.sensors.gps.ModelLogger", autospec=True
         ) as mock_base_logger:
-            tracker = GPSTracker()
+            tracker = GPS()
             mock_base_logger.assert_called_once_with("gps_tracker")
 
     def test_connection_error_logging(self):
@@ -60,10 +60,10 @@ class TestGPSTrackerLogging(unittest.TestCase):
         with patch(
             "gpsd.connect", side_effect=GPSConnectionError, autospec=True
         ), patch(
-            "models.data_models.gps_tracker.ModelLogger", autospec=True
+            "models.sensors.gps.ModelLogger", autospec=True
         ) as mock_base_logger:
             with self.assertRaises(GPSConnectionError):
-                tracker = GPSTracker()
+                tracker = GPS()
                 tracker.connect()
             mock_base_logger.error.assert_called_once_with(
                 "Could not connect to GPS device"
@@ -74,10 +74,10 @@ class TestGPSTrackerLogging(unittest.TestCase):
             "gpsd.get_current", side_effect=GPSDataError, autospec=True
         ):
             with patch(
-                "models.data_models.gps_tracker.ModelLogger", autospec=True
+                "models.sensors.gps.ModelLogger", autospec=True
             ) as mock_base_logger:
                 with self.assertRaises(GPSDataError):
-                    tracker = GPSTracker()
+                    tracker = GPS()
                     tracker.connect()
                     tracker._pollGPSData()
 
