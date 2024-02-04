@@ -40,7 +40,7 @@ class TestGPSLogging(unittest.TestCase):
         self.tracker.gps_logger.setFormatter.assert_called()
 
     def test_log_initialization_message(self):
-        with patch("models.sensors.gps.ModelLogger") as mock_base_logger:
+        with patch("models.sensors.gps.ModelLogger", autospec=True) as mock_base_logger:
             GPS()
             mock_base_logger.return_value.debug.assert_called_once_with(
                 "GPS Models logger started"
