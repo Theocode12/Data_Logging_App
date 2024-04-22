@@ -1,5 +1,5 @@
 from models.data_manager.data_saving import DataSavingManager, FileDB
-from multiprocessing import Pipe
+from multiprocessing.connection import Pipe
 from unittest.mock import MagicMock, patch
 import logging
 import unittest
@@ -76,12 +76,10 @@ class TestDataSavingManager(unittest.TestCase):
         ) as mock_save_method:
 
             manager = DataSavingManager(sensor_names=["sensor1", "sensor2"])
-            comm_pipe.send("START")  # Simulate start command
-
             send_data_pipe.send(test_data)  # Simulate receiving data
 
             # Send stop command to exit the while loop
-            comm_pipe.send("STOP")
+            comm_pipe.send("END")
 
             # Run the method
             manager.run(recv_comm_pipe, recv_data_pipe)

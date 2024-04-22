@@ -39,3 +39,12 @@ def env_variables() -> Dict[str, str]:
     env_path = os.path.join(get_base_path(), "config", ".env")
     env_variables = dotenv_values(env_path)
     return env_variables
+
+
+def modify_data_to_dict(line: str) -> Dict[str, Union[str, float]]:
+    data = line.rstrip("\n").split(",")
+    data_dict = {}
+    for datum in data:
+        param, value = datum.split("=")
+        data_dict[param.strip()] = value.strip()
+    return data_dict

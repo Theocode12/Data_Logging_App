@@ -8,9 +8,11 @@ from models.exceptions.exception import (
 )
 from models.db_engine.db import MetaDB
 from models import ModelLogger
-from multiprocessing.connection import Connection
+from multiprocessing.connection import Connection, Pipe
+from multiprocessing import Process
 from typing import List, Dict, Union, Optional
-from util import get_base_path, is_internet_connected, env_variables
+from time import sleep
+from util import get_base_path, is_internet_connected, env_variables, modify_data_to_dict
 import sys
 import json
 import os
@@ -128,10 +130,12 @@ class CloudTransfer:
         )
 
         try:
+            print("In connect")
             mqtt_future = self.mqtt_connection.connect()
-
+            print("made con")
             # Future.result() waits until a result is available
-            mqtt_future.result()
+            mqtt_future.result(timeout=2)
+            print("result is available")
             self.connected = True
         except Exception:
             raise AWSCloudConnectionError
@@ -142,7 +146,7 @@ class CloudTransfer:
         """
         try:
             disconnect_future = self.mqtt_connection.disconnect()
-            disconnect_future.result()
+            disconnect_future.result(2)
             self.connected = False
         except Exception:
             raise AWSCloudDisconnectError
@@ -208,14 +212,10 @@ class CloudTransferManager:
         if not base_path:
             base_path = get_base_path()
 
-        if not metadata_path:
-            metadata_path = self.meta_db.get_metadata_path()
 
         db_path = os.path.join(base_path, "data/")
         # Remember to lock resources (file when using them)
-        metadata = self.meta_db.retrieve_metadata(
-            metadata_path, meta=["LastUploadFile"]
-        )
+        metadata = self.meta_db.retrieve_metadata()
         last_upload_filepath = metadata.get("LastUploadFile")
         if (
             last_upload_filepath is not None
@@ -259,6 +259,7 @@ class CloudTransferManager:
         if self._is_connected():
             for line in lines:
                 data = modify_data_to_dict(line)
+                # print(filepath, line)
                 self.cloud_transfer.publish(data)
 
             self.meta_db.save_metadata(
@@ -277,7 +278,10 @@ class CloudTransferManager:
         Returns:
         - bool: True if connected, False otherwise.
         """
-        return is_internet_connected() and self.cloud_transfer.connected
+        is_con = is_internet_connected()
+        ct_con = self.cloud_transfer.connected
+        print(is_con)
+        return is_con and ct_con
 
     def get_unuploaded_files(
         self, last_upload_file_date: List[str], db_path: str
@@ -322,34 +326,69 @@ class CloudTransferManager:
         return files_to_be_uploaded
 
     def run(self, recv_cmd_pipe: Connection, data_pipe: Connection = None):
+        db = MetaDB()
+
         while True:
             if recv_cmd_pipe.poll():
                 command = recv_cmd_pipe.recv()
-                if command == "STOP":
-                    break
+                if command == "END":
+                    exit()
 
-            if is_internet_connected():
+            if self._is_connected():
+                print("connected...")
+                # print(db.target)
+                db.set_target(db.get_db_filepath())
+                if db.target != self.meta_db.retrieve_metadata(path=db.get_metadata_path()).get("LastUploadFile"):
+                    try:
+                        self.batch_upload()
+                    except AWSCloudUploadError:
+                        pass
+                else:
+                    db.retrieve_metadata()
+                    db.set_target(db.get_db_filepath())
+                    with db as db_connection:
+                        line = db_connection.readline()
+                    if line:
+                        print("Line is", line)
+                        data = modify_data_to_dict(line)
+                        self.cloud_transfer.publish(data)
+                        db.save_metadata()
+            else:
                 try:
+                    # pass
+                    print("failed connection to cloud")
                     self.cloud_transfer.connect()
-                except:
-                    break
-
-            # poll data from database and upload to cloud
-
-        # check the offset value from meta
-        # try reading the database and check if my tell value changes if yes
-        # try: uploading the file contents
-        # save the new offset
-        # sleep for 10 sec
-        pass
-
-        # Lock todays own then push all the files to the last LINE
+                except AWSCloudConnectionError:
+                    pass
 
 
-def modify_data_to_dict(line: str) -> Dict[str, Union[str, float]]:
-    data = line.rstrip("\n").split(",")
-    data_dict = {}
-    for datum in data:
-        param, value = datum.split("=")
-        data_dict[param.strip()] = value.strip()
-    return data_dict
+
+if __name__ == "__main__":
+    def process_target(instance, com_pipe, data_pipe):
+        instance.run(com_pipe, data_pipe)
+    ctfm = CloudTransferManager()
+    send_pipe, recv_pipe = Pipe()
+
+    p = Process(target=process_target, args=(ctfm, recv_pipe, None))
+    p.start()
+
+    sleep(2)
+
+    send_pipe.send("END")
+    p.join()
+    if p.is_alive():
+        p.terminate()
+
+    # ctf = CloudTransfer()
+    # ctf.connect()
+    # if ctf.connected == True:
+    #     ctf.publish(
+    #         {
+    #             "longitude": "7.3733° E",
+    #             "latitude": "6.8429° N",
+    #             "current": "120",
+    #             "voltage": "48",
+    #             "power": "6560",
+    #         }
+    #     )
+    #     ctf.disconnect()

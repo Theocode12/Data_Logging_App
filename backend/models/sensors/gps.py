@@ -2,7 +2,37 @@ from typing import Dict, Optional
 from models.exceptions.exception import GPSConnectionError, GPSDataError
 from models.sensors.sensor import Sensor
 from models import ModelLogger
+from util import is_internet_connected
 import gpsd
+import requests
+
+
+class OnlineGPS:
+    class GPSResponse:
+        def __init__(self, data):
+            self.data = data
+
+        def position(self):
+            return self.data.get("longitude"), self.data.get("latitude")
+
+        def speed(self):
+            return None
+
+        def altitude(self):
+            return None
+
+    def get_current(self):
+        try:
+            response = requests.get("http://ip-api.com/json/")
+            data = response.json()
+            if data["status"] == "success":
+                latitude = data["lat"]
+                longitude = data["lon"]
+                return self.GPSResponse({"longitude": longitude, "latitude": latitude})
+            else:
+                print("Failed to retrieve location data:", data["message"])
+        except Exception as e:
+            print("An error occurred:", str(e))
 
 
 class GPS(Sensor):
@@ -29,10 +59,13 @@ class GPS(Sensor):
             self.gps_logger.error("Could not connect to GPS device")
             raise GPSConnectionError("Could not connect to GPS device")
 
-    def _pollGPSData(self) -> None:
+    def _pollGPSData(self, gps_obj: Optional[OnlineGPS] = None) -> None:
         """polls gps data from gps device and stores it in the data attribute"""
         try:
-            self.GPSResponse = gpsd.get_current()
+            if gps_obj is None:
+                self.GPSResponse = gpsd.get_current()
+            else:
+                self.GPSResponse = gps_obj.get_current()
         except Exception:
             self.gps_logger.warning("Unexpected result from gps device")
             raise GPSDataError("Unexpected result from gps device")
@@ -61,5 +94,17 @@ class GPS(Sensor):
             getattr(self, method_name)()
 
     def get_data(self) -> Dict[str, Optional[float]]:
-        self._pollGPSData()
+        try:
+            self.connect()
+        except GPSConnectionError:
+            if is_internet_connected():
+                oGPS = OnlineGPS()
+                self._pollGPSData(oGPS)
+        else:
+            self._pollGPSData()
         return self.data
+
+
+if __name__ == "__main__":
+    gps = GPS()
+    print(gps.get_data())

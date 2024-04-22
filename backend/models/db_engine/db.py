@@ -84,7 +84,7 @@ class FileDB:
         if dir:
             try:
                 os.makedirs(dir, exist_ok=True)
-                DBlogger.logger.info("Directory created/exists: {}".format(dir))
+                # DBlogger.logger.info("Directory created/exists: {}".format(dir))
             except Exception as e:
                 raise CreateDirectoryError("Failed to create directory: {}".format(dir))
         return dir
@@ -342,7 +342,7 @@ class MetaDB(FileDB):
         A list of lines from the metadata file.
         """
         if not path:
-            path = self.get_metadata_path(path)
+            path = self.get_metadata_path()
         if forcedb:
             self.set_target(path)
             with self:
@@ -399,7 +399,7 @@ class MetaDB(FileDB):
         return self.meta
 
     def save_metadata(
-        self, path: Optional[str] = None, meta: Dict[str, Any] = {}
+        self, path: Optional[str] = None, meta: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Save metadata to a file.
@@ -415,6 +415,9 @@ class MetaDB(FileDB):
         """
         if not path:
             path = self.get_metadata_path()
+
+        if not meta:
+            meta = self.meta
 
         if self.file_exits(path):
             self.retrieve_metadata_lines(path)
@@ -451,7 +454,7 @@ class MetaDB(FileDB):
 
     def readline(self, offset: int = None) -> str:
         """
-        Read all lines from the open file.
+        Read line from the open file.
 
         Args:
         - offset (int): Metadata to determine the file offset.

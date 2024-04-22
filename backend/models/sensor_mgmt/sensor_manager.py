@@ -1,4 +1,5 @@
 from typing import Optional, List
+from time import sleep
 from multiprocessing.connection import Connection
 from models.db_engine.db import TempDB
 from models.sensor_mgmt.register_sensor import SensorModule
@@ -6,7 +7,7 @@ import importlib
 
 
 class SensorDataManager:
-    collection_interval: Optional[int] = None
+    COLLECTION_INTERVAL: Optional[int] = 1
 
     def __init__(self):
         self.data = {}
@@ -60,15 +61,16 @@ class SensorDataManager:
         while True:
             if comm_pipe.poll():
                 command = comm_pipe.recv()
-                if command == "STOP":
-                    break
-                elif command == "START_SEND_DATA":
+                if command == "END":
+                    print("End of command in SDManager")
+                    exit()
+                elif command == "START":
                     send_data = True
-                elif command == "STOP_SEND_DATA":
+                elif command == "STOP":
                     send_data = False
 
-            self.data = {"SensorData": "Value"}
-            # self.get_data_from_sensors()
+            # self.data = {"arg1": "Value1", "arg2": "Value2"}
+            self.get_data_from_sensors()
             self.tmp_db.save_to_tmp_db(self.data)
             if send_data:
                 data_pipe.send(self.data)
@@ -77,5 +79,4 @@ class SensorDataManager:
                 db_lines = 0
 
             db_lines += 1
-
-        print(f"{command}: I am in SensorDataManager class")
+            sleep(self.COLLECTION_INTERVAL)
