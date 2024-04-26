@@ -209,7 +209,7 @@ class CommandHandler:
 
     @staticmethod
     def get_process_name_from_command(command):
-        return command.split("-")[1]
+        return command.split("-")[1].lower()
 
     @staticmethod
     def process_target(instance, com_pipe, data_pipe):
@@ -226,18 +226,18 @@ if __name__ == "__main__":
 
     # Manager.send_data_sdm.send({"arg1": "value1", "arg2": "value2"})
 
-    manager.handle_command("START-DATA_COLLECTION")
-    sleep(1)
+    # manager.handle_command("START-DATA_COLLECTION")
+    # sleep(1)
 
-    manager.handle_command(
-        "START-DATA_SAVING", "longitude", "latitude", kwarg1="value1", kwarg2="value2"
-    )
-    sleep(1)
+    # manager.handle_command(
+    #     "START-DATA_SAVING", "longitude", "latitude", kwarg1="value1", kwarg2="value2"
+    # )
+    # sleep(1)
 
     manager.handle_command("START-CLOUD_TRANSFER")
     sleep(5)
-    manager.handle_command("STOP-DATA_COLLECTION")
-    sleep(20)
+    # manager.handle_command("STOP-DATA_COLLECTION")
+    sleep(10)
     # Manager.send_cmd_ctm.send("END")
     manager.handle_command("STOP-CLOUD_TRANSFER")
-    manager.handle_command("STOP-DATA_SAVING")
+    # manager.handle_command("STOP-DATA_SAVING")

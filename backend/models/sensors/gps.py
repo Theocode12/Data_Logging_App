@@ -48,12 +48,12 @@ class GPS(Sensor):
             "speed": None,
         }
         self.gps_logger = logger or ModelLogger("gps_tracker").customiseLogger()
-        self.gps_logger.debug("GPSTracker Models logger started")
 
     def connect(self) -> None:
         """Attempts to connect to a GPS device"""
         try:
             gpsd.connect()
+            self.gps_logger.info("connected to GPS device")
 
         except Exception:
             self.gps_logger.error("Could not connect to GPS device")
@@ -73,15 +73,24 @@ class GPS(Sensor):
 
     def _set_pos(self) -> None:
         """Stores the position(longitude and lagtitude) from the gps response in the data attribute"""
-        self.data["longitude"], self.data["latitude"] = self.GPSResponse.position()
+        try:
+            self.data["longitude"], self.data["latitude"] = self.GPSResponse.position()
+        except gpsd.NoFixError:
+            pass
 
     def _set_alt(self) -> None:
         """Stores the altitude from the gps response in the data attribute"""
-        self.data["altitude"] = self.GPSResponse.altitude()
+        try:
+            self.data["altitude"] = self.GPSResponse.altitude()
+        except gpsd.NoFixError:
+            pass
 
     def _set_speed(self) -> None:
         """Stores the speed from the gps response in the data attribute"""
-        self.data["speed"] = self.GPSResponse.speed()
+        try:
+            self.data["speed"] = self.GPSResponse.speed()
+        except gpsd.NoFixError:
+            pass
 
     def _gather_data(self) -> None:
         """Calls the relevant method to store the data in the data attribute"""

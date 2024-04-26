@@ -130,12 +130,11 @@ class CloudTransfer:
         )
 
         try:
-            print("In connect")
             mqtt_future = self.mqtt_connection.connect()
-            print("made con")
             # Future.result() waits until a result is available
-            mqtt_future.result(timeout=2)
+            con_future = mqtt_future.result(timeout=2)
             print("result is available")
+            print(con_future)
             self.connected = True
         except Exception:
             raise AWSCloudConnectionError
@@ -159,9 +158,13 @@ class CloudTransfer:
         - data (Dict[str, Any]): The data to be published.
         """
         message_json = json.dumps(data)
-        self.mqtt_connection.publish(
+        print(message_json)
+        pub_future, id = self.mqtt_connection.publish(
             topic=self.message_topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE
         )
+        pub_future.result(2)
+        print("After publishing message",pub_future, id, "done")
+
 
     def subscribe(self, topic):
         """
@@ -191,12 +194,13 @@ class CloudTransferManager:
         self.meta_db = MetaDB()
         self.lock = lock
 
-        try:
-            if is_internet_connected():
-                self.cloud_transfer.connect()
+        # try:
+        #     if is_internet_connected():
+        #         self.cloud_transfer.connect()
 
-        except AWSCloudConnectionError:
-            pass
+        # except AWSCloudConnectionError:
+        #     print("Init connect Error")
+        #     pass
 
     def batch_upload(
         self, base_path: Optional[str] = None, metadata_path: Optional[str] = None
@@ -278,10 +282,7 @@ class CloudTransferManager:
         Returns:
         - bool: True if connected, False otherwise.
         """
-        is_con = is_internet_connected()
-        ct_con = self.cloud_transfer.connected
-        print(is_con)
-        return is_con and ct_con
+        return is_internet_connected() and self.cloud_transfer.connected
 
     def get_unuploaded_files(
         self, last_upload_file_date: List[str], db_path: str
@@ -329,66 +330,66 @@ class CloudTransferManager:
         db = MetaDB()
 
         while True:
+
             if recv_cmd_pipe.poll():
                 command = recv_cmd_pipe.recv()
                 if command == "END":
                     exit()
 
             if self._is_connected():
-                print("connected...")
-                # print(db.target)
+
                 db.set_target(db.get_db_filepath())
                 if db.target != self.meta_db.retrieve_metadata(path=db.get_metadata_path()).get("LastUploadFile"):
                     try:
                         self.batch_upload()
                     except AWSCloudUploadError:
-                        pass
+                        raise AWSCloudUploadError
                 else:
                     db.retrieve_metadata()
                     db.set_target(db.get_db_filepath())
                     with db as db_connection:
                         line = db_connection.readline()
                     if line:
-                        print("Line is", line)
                         data = modify_data_to_dict(line)
                         self.cloud_transfer.publish(data)
                         db.save_metadata()
             else:
                 try:
-                    # pass
-                    print("failed connection to cloud")
+                    print("failed connection to cloud 1")
+
                     self.cloud_transfer.connect()
                 except AWSCloudConnectionError:
+                    print("failed connection to cloud 2")
                     pass
 
 
 
 if __name__ == "__main__":
-    def process_target(instance, com_pipe, data_pipe):
-        instance.run(com_pipe, data_pipe)
-    ctfm = CloudTransferManager()
-    send_pipe, recv_pipe = Pipe()
+    # def process_target(instance, com_pipe, data_pipe):
+    #     instance.run(com_pipe, data_pipe)
+    # ctfm = CloudTransferManager()
+    # send_pipe, recv_pipe = Pipe()
 
-    p = Process(target=process_target, args=(ctfm, recv_pipe, None))
-    p.start()
+    # p = Process(target=process_target, args=(ctfm, recv_pipe, None))
+    # p.start()
 
-    sleep(2)
+    # sleep(2)
 
-    send_pipe.send("END")
-    p.join()
-    if p.is_alive():
-        p.terminate()
+    # send_pipe.send("END")
+    # p.join()
+    # if p.is_alive():
+    #     p.terminate()
 
-    # ctf = CloudTransfer()
-    # ctf.connect()
-    # if ctf.connected == True:
-    #     ctf.publish(
-    #         {
-    #             "longitude": "7.3733° E",
-    #             "latitude": "6.8429° N",
-    #             "current": "120",
-    #             "voltage": "48",
-    #             "power": "6560",
-    #         }
-    #     )
-    #     ctf.disconnect()
+    ctf = CloudTransfer()
+    ctf.connect()
+    if ctf.connected == True:
+        ctf.publish(
+            {
+                "longitude": "7.3733° E",
+                "latitude": "6.8429° N",
+                "current": "120",
+                "voltage": "48",
+                "power": "6560",
+            }
+        )
+        ctf.disconnect()
