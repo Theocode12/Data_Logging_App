@@ -1,3 +1,13 @@
-# Library to help parse GPS coordinates
-gpsd-py3
-dotenv
+awscrt==0.20.2
+awsiotsdk @ file:///home/Theo/Data_Logging_App/backend/aws-iot-device-sdk-python-v2
+certifi==2024.2.2
+charset-normalizer==3.3.2
+dotenv==0.0.5
+evdev==1.7.0
+gpsd-py3==0.3.0
+idna==3.7
+pynput==1.7.6
+python-xlib==0.33
+requests==2.31.0
+six==1.16.0
+urllib3==2.2.1
