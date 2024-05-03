@@ -3,11 +3,16 @@ from time import sleep
 from multiprocessing.connection import Connection
 from models.db_engine.db import TempDB
 from models.sensor_mgmt.register_sensor import SensorModule
+from models import ModelLogger
 import importlib
 
 
+class SensorManagerlogger:
+    logger = ModelLogger("sensor-manager").customiseLogger()
+
+
 class SensorDataManager:
-    COLLECTION_INTERVAL: Optional[int] = 1
+    COLLECTION_INTERVAL: Optional[int] = 5
 
     def __init__(self):
         self.data = {}
@@ -49,7 +54,7 @@ class SensorDataManager:
                 sensor_classes.append(sensor_class)
             except Exception as e:
                 # Handle import errors or attribute errors
-                print(f"Error importing sensor class {sensor_module}: {e}")
+                SensorManagerlogger.logger.error("Error importing sensor modules")
         return sensor_classes
 
     def get_sensor_modules(self):
@@ -62,14 +67,19 @@ class SensorDataManager:
             if comm_pipe.poll():
                 command = comm_pipe.recv()
                 if command == "END":
-                    print("End of command in SDManager")
+                    SensorManagerlogger.logger.info(
+                        "Data Collection From Sensor Stopped"
+                    )
                     exit()
                 elif command == "START":
+                    SensorManagerlogger.logger.info("Data storage initiated")
                     send_data = True
-                elif command == "STOP":
+                elif (
+                    command == "STOP"
+                ):  # Bug: Fix data-saving manager to send stop command
+                    SensorManagerlogger.logger.info("Data storage stopped")
                     send_data = False
 
-            # self.data = {"arg1": "Value1", "arg2": "Value2"}
             self.get_data_from_sensors()
             self.tmp_db.save_to_tmp_db(self.data)
             if send_data:

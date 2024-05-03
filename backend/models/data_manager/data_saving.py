@@ -1,7 +1,11 @@
 from multiprocessing.connection import Connection
 from models.db_engine.db import FileDB
+from models import ModelLogger
 from typing import Sequence, Dict
 
+
+class DSlogger:
+    logger = ModelLogger("data-saving").customiseLogger()
 
 class DataSavingManager:
     """
@@ -18,6 +22,7 @@ class DataSavingManager:
         """
         self.sensor_names = sensor_names
         self.db_path = FileDB().create_file()
+        DSlogger.logger.info("Ready to saving to database")
 
     def get_specified_data(self, data: Dict[str, str]):
         if not self.sensor_names:
@@ -42,10 +47,12 @@ class DataSavingManager:
         while True:
             if data_pipe.poll():
                 data = data_pipe.recv()
-                self.save_collected_data(self.get_specified_data(data))
+                DSlogger.logger.info(f"Data: {data} polled successfully")
+                data = self.get_specified_data(data)
+                self.save_collected_data(data)
+                DSlogger.logger.info(f"Data: {data} saved successfully")
             if recv_cmd_pipe.poll():
                 command = recv_cmd_pipe.recv()
                 if command == "END":
-                    print("End of DSM process")
+                    DSlogger.logger.info(f'Stopped saving data to database')
                     break
-

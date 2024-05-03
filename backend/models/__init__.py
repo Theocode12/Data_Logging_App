@@ -16,7 +16,7 @@ class ModelLogger(BaseLogger):
     ):
         self.setLevel(level)
         self.setFileHandler(filename)
-        self.setStreamHandler()
+        # self.setStreamHandler()
 
         if format:
             self.setFormatter(format)

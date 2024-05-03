@@ -12,7 +12,12 @@ from multiprocessing.connection import Connection, Pipe
 from multiprocessing import Process
 from typing import List, Dict, Union, Optional
 from time import sleep
-from util import get_base_path, is_internet_connected, env_variables, modify_data_to_dict
+from util import (
+    get_base_path,
+    is_internet_connected,
+    env_variables,
+    modify_data_to_dict,
+)
 import sys
 import json
 import os
@@ -132,11 +137,11 @@ class CloudTransfer:
         try:
             mqtt_future = self.mqtt_connection.connect()
             # Future.result() waits until a result is available
-            con_future = mqtt_future.result(timeout=2)
-            print("result is available")
-            print(con_future)
+            mqtt_future.result(timeout=2)
+            CTFlogger.logger.info("Connection sucessfully established")
             self.connected = True
         except Exception:
+            CTFlogger.logger.error("Failed to establish connection")
             raise AWSCloudConnectionError
 
     def disconnect(self) -> None:
@@ -146,6 +151,7 @@ class CloudTransfer:
         try:
             disconnect_future = self.mqtt_connection.disconnect()
             disconnect_future.result(2)
+            CTFlogger.logger.info("Disconnected successfully")
             self.connected = False
         except Exception:
             raise AWSCloudDisconnectError
@@ -158,13 +164,11 @@ class CloudTransfer:
         - data (Dict[str, Any]): The data to be published.
         """
         message_json = json.dumps(data)
-        print(message_json)
         pub_future, id = self.mqtt_connection.publish(
             topic=self.message_topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE
         )
         pub_future.result(2)
-        print("After publishing message",pub_future, id, "done")
-
+        CTFlogger.logger.info("Data Published successfully")
 
     def subscribe(self, topic):
         """
@@ -215,8 +219,7 @@ class CloudTransferManager:
         # Only works on Linux and Mac OS
         if not base_path:
             base_path = get_base_path()
-
-
+        CTFlogger.logger.info("Starting Batch Upload")
         db_path = os.path.join(base_path, "data/")
         # Remember to lock resources (file when using them)
         metadata = self.meta_db.retrieve_metadata()
@@ -230,6 +233,7 @@ class CloudTransferManager:
                 last_upload_date = last_upload_filepath.replace(db_path, "")
                 files = self.get_unuploaded_files(last_upload_date.split("/"), db_path)
                 self.upload_files(db_path, files)
+                CTFlogger.logger.info("Batch upload complete")
             except AWSCloudUploadError as e:
                 raise e
 
@@ -263,7 +267,6 @@ class CloudTransferManager:
         if self._is_connected():
             for line in lines:
                 data = modify_data_to_dict(line)
-                # print(filepath, line)
                 self.cloud_transfer.publish(data)
 
             self.meta_db.save_metadata(
@@ -334,12 +337,15 @@ class CloudTransferManager:
             if recv_cmd_pipe.poll():
                 command = recv_cmd_pipe.recv()
                 if command == "END":
-                    exit()
+                    CTFlogger.logger.info("Cloud Transfer Stopped")
+                    break
 
             if self._is_connected():
 
                 db.set_target(db.get_db_filepath())
-                if db.target != self.meta_db.retrieve_metadata(path=db.get_metadata_path()).get("LastUploadFile"):
+                if db.target != self.meta_db.retrieve_metadata(
+                    path=db.get_metadata_path()
+                ).get("LastUploadFile"):
                     try:
                         self.batch_upload()
                     except AWSCloudUploadError:
@@ -355,30 +361,12 @@ class CloudTransferManager:
                         db.save_metadata()
             else:
                 try:
-                    print("failed connection to cloud 1")
-
                     self.cloud_transfer.connect()
                 except AWSCloudConnectionError:
-                    print("failed connection to cloud 2")
                     pass
 
 
-
 if __name__ == "__main__":
-    # def process_target(instance, com_pipe, data_pipe):
-    #     instance.run(com_pipe, data_pipe)
-    # ctfm = CloudTransferManager()
-    # send_pipe, recv_pipe = Pipe()
-
-    # p = Process(target=process_target, args=(ctfm, recv_pipe, None))
-    # p.start()
-
-    # sleep(2)
-
-    # send_pipe.send("END")
-    # p.join()
-    # if p.is_alive():
-    #     p.terminate()
 
     ctf = CloudTransfer()
     ctf.connect()

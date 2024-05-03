@@ -1,28 +1,46 @@
 from pynput import keyboard
+from .manager import Manager
+import signal
+
+
+def sigint_handler(signal, frame):
+    print("SIGINT received. Ignoring...")
 
 
 def on_ctrl_c():
-    print('ctrl-c on')
+    print("ctrl-c on")
+    manager = Manager.get_instance()
+    manager.handle_command("START-DATA_SAVING")
 
 
 def off_ctrl_c():
-    print('ctrl-c off')
+    print("ctrl-c off")
+    manager = Manager.get_instance()
+    manager.handle_command("STOP-CLOUD_TRANSFER")
 
 
 def on_ctrl_s():
-    print('ctrl-s on')
+    print("ctrl-s on")
+    manager = Manager.get_instance()
+    manager.handle_command("START-CLOUD_TRANSFER")
 
 
 def off_ctrl_s():
-    print('ctrl-s off')
+    print("ctrl-s off")
+    manager = Manager.get_instance()
+    manager.handle_command("START-DATA_SAVING")
 
 
 def on_ctrl_d():
-    print('ctrl-d on')
+    print("ctrl-d on")
+    manager = Manager.get_instance()
+    manager.handle_command("START-DATA_COLLECTION")
 
 
 def off_ctrl_d():
-    print('ctrl-d off')
+    print("ctrl-d off")
+    manager = Manager.get_instance()
+    manager.handle_command("STOP-DATA_COLLECTION")
 
 
 KEYS = {
@@ -31,24 +49,23 @@ KEYS = {
     "ctrl_d": {"flag": 0, "functions": (on_ctrl_d, off_ctrl_d)},
 }
 
+
 def activate_helper(key: str):
     if flagnfunc := KEYS.get(key):
         flagnfunc.get("functions")[flagnfunc.get("flag")]()
         flagnfunc["flag"] = not flagnfunc["flag"]
 
+
 def on_activate_c():
-    print("<ctrl>+c pressed")
-    activate_helper('ctrl_c')
+    activate_helper("ctrl_c")
 
 
 def on_activate_s():
-    print("<ctrl>+s pressed")
-    activate_helper('ctrl_s')
+    activate_helper("ctrl_s")
 
 
 def on_activate_d():
-    print("<ctrl>+d pressed")
-    activate_helper('ctrl_d')
+    activate_helper("ctrl_d")
 
 
 class KeyboardInputHandler:
@@ -62,5 +79,6 @@ class KeyboardInputHandler:
         )
 
     def listen(self):
+        signal.signal(signal.SIGINT, sigint_handler)
         with self.hotkeys as hk:
             hk.join()

@@ -7,6 +7,10 @@ import gpsd
 import requests
 
 
+class GPSlogger:
+    logger = ModelLogger("gps").customiseLogger()
+
+
 class OnlineGPS:
     class GPSResponse:
         def __init__(self, data):
@@ -30,9 +34,11 @@ class OnlineGPS:
                 longitude = data["lon"]
                 return self.GPSResponse({"longitude": longitude, "latitude": latitude})
             else:
-                print("Failed to retrieve location data:", data["message"])
+                GPSlogger.logger.error(
+                    "Failed to retrieve location data:", data["message"]
+                )
         except Exception as e:
-            print("An error occurred:", str(e))
+            GPSlogger.logger.error("An error occurred while accessing the internet")
 
 
 class GPS(Sensor):
@@ -47,16 +53,15 @@ class GPS(Sensor):
             "altitude": None,
             "speed": None,
         }
-        self.gps_logger = logger or ModelLogger("gps_tracker").customiseLogger()
 
     def connect(self) -> None:
         """Attempts to connect to a GPS device"""
         try:
             gpsd.connect()
-            self.gps_logger.info("connected to GPS device")
+            GPSlogger.logger.info("connected to GPS hardware")
 
         except Exception:
-            self.gps_logger.error("Could not connect to GPS device")
+            GPSlogger.logger.error("Could not connect to GPS device")
             raise GPSConnectionError("Could not connect to GPS device")
 
     def _pollGPSData(self, gps_obj: Optional[OnlineGPS] = None) -> None:
@@ -67,8 +72,8 @@ class GPS(Sensor):
             else:
                 self.GPSResponse = gps_obj.get_current()
         except Exception:
-            self.gps_logger.warning("Unexpected result from gps device")
-            raise GPSDataError("Unexpected result from gps device")
+            GPSlogger.logger.warning("Unexpected result from GPS device")
+            raise GPSDataError("Unexpected result from GPS device")
         self._gather_data()
 
     def _set_pos(self) -> None:
@@ -107,6 +112,7 @@ class GPS(Sensor):
             self.connect()
         except GPSConnectionError:
             if is_internet_connected():
+                GPSlogger.logger.info("Using Online GPS Feature")
                 oGPS = OnlineGPS()
                 self._pollGPSData(oGPS)
         else:

@@ -1,10 +1,15 @@
 from models.sensor_mgmt.sensor_manager import SensorDataManager
 from models.data_manager.data_saving import DataSavingManager
 from models.data_manager.cloud_transfer import CloudTransferManager
+from models import ModelLogger
 from multiprocessing.connection import Pipe
 from multiprocessing import Process
 from time import sleep
 from typing import Dict
+
+
+class Managerlogger:
+    logger = ModelLogger("manager").customiseLogger()
 
 
 class Manager:
@@ -14,6 +19,13 @@ class Manager:
     send_cmd_ctm, recv_cmd_ctm = Pipe()
     send_data_sdm, recv_data_dsm = Pipe()
 
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self) -> None:
         self.processes = {}
         self.cmd_hdlr = CommandHandler()
@@ -22,10 +34,16 @@ class Manager:
     def get_pipes_connections(cls, name):
         return cls.pipes.get(name)
 
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
     def handle_command(self, command, *args, **kwargs) -> dict:
+        Managerlogger.logger.info(f"Handling command: {command}")
         status = self.cmd_hdlr.execute_command(command, self, *args, **kwargs)
         self.update_processes(status.get("process_name"), status.get("process"))
-        print(status)
         return status
 
     def get_process(self, process_name):
@@ -59,7 +77,7 @@ class CommandHandler:
         if command in self.command_map:
             return self.command_map[command](command, processes, *args, **kwargs)
         else:
-            print(f"Unknown command: {command}")
+            Managerlogger.logger.info(f"Unknown command {command}")
 
     def start_data_saving(self, command, caller: Manager, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
@@ -70,6 +88,7 @@ class CommandHandler:
             )
             process.start()
             Manager.send_cmd_sdm.send("START")
+            Managerlogger.logger.info("start-Data_saving command successfully Executed")
             return self.status_generator(
                 status="success",
                 process=process,
@@ -77,7 +96,7 @@ class CommandHandler:
                 message="Data is being stored",
             )
         return self.status_generator(
-            status="failed",
+            status="success",
             process=caller.get_process(process_name),
             process_name=process_name.lower(),
             message="Data is already being saved",
@@ -92,13 +111,14 @@ class CommandHandler:
             Manager.send_cmd_dsm.send("END")
             process.join()
             if process.is_alive():
-                print("DSM Process is still alive")
+                Managerlogger.logger.info("stop-Data_saving command Failed")
                 return self.status_generator(
                     status="failed",
                     process=process,
                     process_name=process_name.lower(),
                     message="DSM Process is still alive",
                 )
+            Managerlogger.logger.info("stop-Data_saving command successfully Executed")
             return self.status_generator(
                 status="success",
                 process=None,
@@ -114,7 +134,7 @@ class CommandHandler:
 
     def start_data_collection(self, command, caller, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if not caller.get_process(process_name):
+        if not caller.get_process(process_name):  # check if process exists and alive
             sdm_instance = SensorDataManager()
             process = self.process_generator(
                 process_name, sdm_instance, Manager.recv_cmd_sdm, Manager.send_data_sdm
@@ -127,7 +147,7 @@ class CommandHandler:
                 message="Data is being collected",
             )
         return self.status_generator(
-            status="failed",
+            status="success",
             process=caller.get_process(process_name),
             process_name=process_name.lower(),
             message="Data collection ongoing",
@@ -139,13 +159,15 @@ class CommandHandler:
             Manager.send_cmd_sdm.send("END")
             process.join()
             if process.is_alive():
-                print("SDM Process is still alive")
                 return self.status_generator(
                     status="failed",
                     process=process,
                     process_name=process_name.lower(),
                     message="SDM Process is still alive",
                 )
+            Managerlogger.logger.info(
+                "stop-Data_collection command successfully Executed"
+            )
             return self.status_generator(
                 status="success",
                 process=None,
@@ -187,13 +209,15 @@ class CommandHandler:
             process.join()
             if process.is_alive():
                 # process.terminate()
-                print("CTM Process is still alive")
                 return self.status_generator(
                     status="failed",
                     process=process,
                     process_name=process_name.lower(),
                     message="SDM Process is still alive",
                 )
+            Managerlogger.logger.info(
+                "stop-cloud_transfer command successfully Executed"
+            )
             return self.status_generator(
                 status="success",
                 process=None,
