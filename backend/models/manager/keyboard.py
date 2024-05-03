@@ -10,7 +10,7 @@ def sigint_handler(signal, frame):
 def on_ctrl_c():
     print("ctrl-c on")
     manager = Manager.get_instance()
-    manager.handle_command("START-DATA_SAVING")
+    manager.handle_command("START-CLOUD_TRANSFER")
 
 
 def off_ctrl_c():
@@ -22,13 +22,13 @@ def off_ctrl_c():
 def on_ctrl_s():
     print("ctrl-s on")
     manager = Manager.get_instance()
-    manager.handle_command("START-CLOUD_TRANSFER")
+    manager.handle_command("START-DATA_SAVING")
 
 
 def off_ctrl_s():
     print("ctrl-s off")
     manager = Manager.get_instance()
-    manager.handle_command("START-DATA_SAVING")
+    manager.handle_command("STOP-DATA_SAVING")
 
 
 def on_ctrl_d():
