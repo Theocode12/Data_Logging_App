@@ -4,7 +4,7 @@ import signal
 
 
 def sigint_handler(signal, frame):
-    print("SIGINT received. Ignoring...")
+    pass
 
 
 def on_ctrl_c():
@@ -20,13 +20,13 @@ def off_ctrl_c():
 
 
 def on_ctrl_s():
-    print("ctrl-s on")
+    print("ctrl-s on", flush=True)
     manager = Manager.get_instance()
     manager.handle_command("START-DATA_SAVING")
 
 
 def off_ctrl_s():
-    print("ctrl-s off")
+    print("ctrl-s off", flush=True)
     manager = Manager.get_instance()
     manager.handle_command("STOP-DATA_SAVING")
 
