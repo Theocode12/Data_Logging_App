@@ -46,7 +46,7 @@ class Manager:
         self.update_processes(status.get("process_name"), status.get("process"))
         return status
 
-    def get_process(self, process_name):
+    def get_process(self, process_name) -> Process:
         return self.processes.get(process_name)
 
     def get_processes(self):
@@ -81,7 +81,7 @@ class CommandHandler:
 
     def start_data_saving(self, command, caller: Manager, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if not caller.get_process(process_name):
+        if (not caller.get_process(process_name)) or (not caller.get_process(process_name).is_alive()):
             dsm_instance = DataSavingManager(sensor_names=args)
             process = self.process_generator(
                 process_name, dsm_instance, Manager.recv_cmd_dsm, Manager.recv_data_dsm
@@ -134,7 +134,7 @@ class CommandHandler:
 
     def start_data_collection(self, command, caller, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if not caller.get_process(process_name):  # check if process exists and alive
+        if (not caller.get_process(process_name)) or (not caller.get_process(process_name).is_alive()):
             sdm_instance = SensorDataManager()
             process = self.process_generator(
                 process_name, sdm_instance, Manager.recv_cmd_sdm, Manager.send_data_sdm
@@ -183,7 +183,7 @@ class CommandHandler:
 
     def start_cloud_transfer(self, command, caller, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if not caller.get_process(process_name):
+        if (not caller.get_process(process_name)) or (not caller.get_process(process_name).is_alive()):
             ctm_instance = CloudTransferManager()
             process = self.process_generator(
                 process_name, ctm_instance, Manager.recv_cmd_ctm, None
