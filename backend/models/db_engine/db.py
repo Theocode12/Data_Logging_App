@@ -209,7 +209,6 @@ class FileDB:
         if path:
             self.set_target(path)
         try:
-
             self.fd = open(self.target, mode)
         except Exception as e:
             raise FileOpenError("Error opening file: {}".format(self.target))

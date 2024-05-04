@@ -15,6 +15,13 @@ class ModelLogger(BaseLogger):
         format=None,
     ):
         self.setLevel(level)
+
+        if not os.path.exists(filename):
+            from models.db_engine.db import FileDB
+
+            with FileDB(filename, "w") as db:
+                db.write("")
+
         self.setFileHandler(filename)
         # self.setStreamHandler()
 

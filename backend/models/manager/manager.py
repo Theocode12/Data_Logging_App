@@ -1,15 +1,19 @@
 from models.sensor_mgmt.sensor_manager import SensorDataManager
-from models.data_manager.data_saving import DataSavingManager
+from models.data_manager.data_saving import StorageManager
 from models.data_manager.cloud_transfer import CloudTransferManager
 from models import ModelLogger
 from multiprocessing.connection import Pipe
 from multiprocessing import Process
 from time import sleep
 from typing import Dict
+from util import get_base_path
+import os
 
 
 class Managerlogger:
-    logger = ModelLogger("manager").customiseLogger()
+    logger = ModelLogger("manager").customiseLogger(
+        filename=os.path.join("{}".format(get_base_path()), "logs", "manager.log")
+    )
 
 
 class Manager:
@@ -44,6 +48,9 @@ class Manager:
         Managerlogger.logger.info(f"Handling command: {command}")
         status = self.cmd_hdlr.execute_command(command, self, *args, **kwargs)
         self.update_processes(status.get("process_name"), status.get("process"))
+        print(
+            f"status: {status['status']} \nmessage: {status['message']} \nprocess-name: {status['process_name']} \nis-alive: {status['process']}"
+        )
         return status
 
     def get_process(self, process_name) -> Process:
@@ -69,9 +76,9 @@ class CommandHandler:
             "START-DATA_COLLECTION": self.start_data_collection,
             "STOP-DATA_COLLECTION": self.stop_data_collection,
         }
-        self.is_data_saving = False
-        self.is_cloud_transfer = False
-        self.is_data_collection = False
+        # self.is_data_saving = False
+        # self.is_cloud_transfer = False
+        # self.is_data_collection = False
 
     def execute_command(self, command, processes, *args, **kwargs):
         if command in self.command_map:
@@ -81,8 +88,10 @@ class CommandHandler:
 
     def start_data_saving(self, command, caller: Manager, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if (not caller.get_process(process_name)) or (not caller.get_process(process_name).is_alive()):
-            dsm_instance = DataSavingManager(sensor_names=args)
+        if (not caller.get_process(process_name)) or (
+            not caller.get_process(process_name).is_alive()
+        ):
+            dsm_instance = StorageManager(sensor_names=args)
             process = self.process_generator(
                 process_name, dsm_instance, Manager.recv_cmd_dsm, Manager.recv_data_dsm
             )
@@ -107,8 +116,10 @@ class CommandHandler:
 
     def stop_data_saving(self, command, caller: Manager, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if process := caller.get_process(process_name):
+        process = caller.get_process(process_name)
+        if process and process.is_alive():
             Manager.send_cmd_dsm.send("END")
+            Managerlogger.logger.info("Command for termination of saving process sent")
             process.join()
             if process.is_alive():
                 Managerlogger.logger.info("stop-Data_saving command Failed")
@@ -118,6 +129,7 @@ class CommandHandler:
                     process_name=process_name.lower(),
                     message="DSM Process is still alive",
                 )
+            Manager.send_cmd_sdm.send("STOP")
             Managerlogger.logger.info("stop-Data_saving command successfully Executed")
             return self.status_generator(
                 status="success",
@@ -125,6 +137,9 @@ class CommandHandler:
                 process_name=process_name.lower(),
                 message="DSM Process is terminated",
             )
+        Managerlogger.logger.info(
+            "data collection process does not exist or is not alive"
+        )
         return self.status_generator(
             status="success",
             process=None,
@@ -134,7 +149,9 @@ class CommandHandler:
 
     def start_data_collection(self, command, caller, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if (not caller.get_process(process_name)) or (not caller.get_process(process_name).is_alive()):
+        if (not caller.get_process(process_name)) or (
+            not caller.get_process(process_name).is_alive()
+        ):
             sdm_instance = SensorDataManager()
             process = self.process_generator(
                 process_name, sdm_instance, Manager.recv_cmd_sdm, Manager.send_data_sdm
@@ -153,10 +170,17 @@ class CommandHandler:
             message="Data collection ongoing",
         )
 
+    def start_command_helper(self, caller, process_name, obj):
+        pass
+
     def stop_data_collection(self, command, caller, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if process := caller.get_process(process_name):
+        process = caller.get_process(process_name)
+        if process and process.is_alive():
             Manager.send_cmd_sdm.send("END")
+            Managerlogger.logger.info(
+                "Command for termination of data collection process sent"
+            )
             process.join()
             if process.is_alive():
                 return self.status_generator(
@@ -174,6 +198,9 @@ class CommandHandler:
                 process_name=process_name.lower(),
                 message="SDM Process is terminated",
             )
+        Managerlogger.logger.info(
+            "data collection process does not exist or is not alive"
+        )
         return self.status_generator(
             status="success",
             process=None,
@@ -183,7 +210,9 @@ class CommandHandler:
 
     def start_cloud_transfer(self, command, caller, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if (not caller.get_process(process_name)) or (not caller.get_process(process_name).is_alive()):
+        if (not caller.get_process(process_name)) or (
+            not caller.get_process(process_name).is_alive()
+        ):
             ctm_instance = CloudTransferManager()
             process = self.process_generator(
                 process_name, ctm_instance, Manager.recv_cmd_ctm, None
@@ -204,8 +233,12 @@ class CommandHandler:
 
     def stop_cloud_transfer(self, command, caller, *args, **kwargs):
         process_name = self.get_process_name_from_command(command)
-        if process := caller.get_process(process_name):
+        process = caller.get_process(process_name)
+        if process and process.is_alive():
             Manager.send_cmd_ctm.send("END")
+            Managerlogger.logger.info(
+                "Command for termination of cloud transfer process sent"
+            )
             process.join()
             if process.is_alive():
                 # process.terminate()
@@ -224,6 +257,9 @@ class CommandHandler:
                 process_name=process_name.lower(),
                 message="CTM Process is terminated",
             )
+        Managerlogger.logger.info(
+            "Cloud Transfer process does not exist or is not alive"
+        )
         return self.status_generator(
             status="success",
             process=None,

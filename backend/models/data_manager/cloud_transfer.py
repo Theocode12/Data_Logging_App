@@ -5,6 +5,7 @@ from models.exceptions.exception import (
     AWSCloudDisconnectError,
     FileOpenError,
     AWSCloudUploadError,
+    AWSTimeoutError
 )
 from models.db_engine.db import MetaDB
 from models import ModelLogger
@@ -156,19 +157,23 @@ class CloudTransfer:
         except Exception:
             raise AWSCloudDisconnectError
 
-    def publish(self, data: dict) -> None:
+    def publish(self, data: dict, timeout: int = 2) -> None:
         """
         Publish data to the specified MQTT topic.
 
         Parameters:
         - data (Dict[str, Any]): The data to be published.
         """
-        message_json = json.dumps(data)
-        pub_future, id = self.mqtt_connection.publish(
-            topic=self.message_topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE
-        )
-        pub_future.result(2)
-        CTFlogger.logger.info("Data Published successfully")
+        try:
+            message_json = json.dumps(data)
+            pub_future, id = self.mqtt_connection.publish(
+                topic=self.message_topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE
+            )
+            pub_future.result(timeout)
+            CTFlogger.logger.info("Data Published successfully")
+        except TimeoutError:
+            CTFlogger.logger.info("Data failed to publish")
+            raise AWSCloudUploadError("Data failed to publish")
 
     def subscribe(self, topic):
         """
@@ -333,7 +338,6 @@ class CloudTransferManager:
         db = MetaDB()
 
         while True:
-
             if recv_cmd_pipe.poll():
                 command = recv_cmd_pipe.recv()
                 if command == "END":
@@ -341,7 +345,6 @@ class CloudTransferManager:
                     break
 
             if self._is_connected():
-
                 db.set_target(db.get_db_filepath())
                 if db.target != self.meta_db.retrieve_metadata(
                     path=db.get_metadata_path()
@@ -349,7 +352,7 @@ class CloudTransferManager:
                     try:
                         self.batch_upload()
                     except AWSCloudUploadError:
-                        raise AWSCloudUploadError
+                        continue
                 else:
                     db.retrieve_metadata()
                     db.set_target(db.get_db_filepath())
@@ -357,7 +360,7 @@ class CloudTransferManager:
                         line = db_connection.readline()
                     if line:
                         data = modify_data_to_dict(line)
-                        self.cloud_transfer.publish(data)
+                        self.cloud_transfer.publish(data) #fix publish timeout
                         db.save_metadata()
             else:
                 try:
@@ -367,7 +370,6 @@ class CloudTransferManager:
 
 
 if __name__ == "__main__":
-
     ctf = CloudTransfer()
     ctf.connect()
     if ctf.connected == True:

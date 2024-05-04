@@ -2,12 +2,17 @@ from multiprocessing.connection import Connection
 from models.db_engine.db import FileDB
 from models import ModelLogger
 from typing import Sequence, Dict
+from util import get_base_path
+import os
 
 
 class DSlogger:
-    logger = ModelLogger("data-saving").customiseLogger()
+    logger = ModelLogger("data-saving").customiseLogger(
+        filename=os.path.join("{}".format(get_base_path()), "logs", "storage.log")
+    )
 
-class DataSavingManager:
+
+class StorageManager:
     """
     Manages data collection from specified data models and stores it in a file-based database.
     """
@@ -54,5 +59,5 @@ class DataSavingManager:
             if recv_cmd_pipe.poll():
                 command = recv_cmd_pipe.recv()
                 if command == "END":
-                    DSlogger.logger.info(f'Stopped saving data to database')
+                    DSlogger.logger.info(f"Stopped saving data to database")
                     break

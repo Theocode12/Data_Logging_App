@@ -5,6 +5,7 @@ from models.db_engine.db import TempDB
 from models.sensor_mgmt.register_sensor import SensorModule
 from models import ModelLogger
 import importlib
+import asyncio
 
 
 class SensorManagerlogger:
@@ -74,9 +75,7 @@ class SensorDataManager:
                 elif command == "START":
                     SensorManagerlogger.logger.info("Data storage initiated")
                     send_data = True
-                elif (
-                    command == "STOP"
-                ):  # Bug: Fix data-saving manager to send stop command
+                elif command == "STOP":
                     SensorManagerlogger.logger.info("Data storage stopped")
                     send_data = False
 

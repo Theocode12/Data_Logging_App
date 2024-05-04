@@ -2,13 +2,16 @@ from typing import Dict, Optional
 from models.exceptions.exception import GPSConnectionError, GPSDataError
 from models.sensors.sensor import Sensor
 from models import ModelLogger
-from util import is_internet_connected
+from util import is_internet_connected, get_base_path
 import gpsd
 import requests
+import os
 
 
 class GPSlogger:
-    logger = ModelLogger("gps").customiseLogger()
+    logger = ModelLogger("gps").customiseLogger(
+        filename=os.path.join("{}".format(get_base_path()), "logs", "gps.log")
+    )
 
 
 class OnlineGPS:
@@ -58,7 +61,7 @@ class GPS(Sensor):
         """Attempts to connect to a GPS device"""
         try:
             gpsd.connect()
-            GPSlogger.logger.info("connected to GPS hardware")
+            GPSlogger.logger.info("connecting to GPS hardware")
 
         except Exception:
             GPSlogger.logger.error("Could not connect to GPS device")
@@ -72,8 +75,8 @@ class GPS(Sensor):
             else:
                 self.GPSResponse = gps_obj.get_current()
         except Exception:
-            GPSlogger.logger.warning("Unexpected result from GPS device")
-            raise GPSDataError("Unexpected result from GPS device")
+            GPSlogger.logger.warning("GPS device not active")
+            raise GPSDataError("GPS device not active")
         self._gather_data()
 
     def _set_pos(self) -> None:
@@ -110,13 +113,15 @@ class GPS(Sensor):
     def get_data(self) -> Dict[str, Optional[float]]:
         try:
             self.connect()
-        except GPSConnectionError:
+            self._pollGPSData()
+        except (GPSConnectionError, GPSDataError):
             if is_internet_connected():
                 GPSlogger.logger.info("Using Online GPS Feature")
                 oGPS = OnlineGPS()
                 self._pollGPSData(oGPS)
-        else:
-            self._pollGPSData()
+            else:
+                GPSlogger.logger.info("Unable to use online GPS feature")
+
         return self.data
 
 

@@ -40,3 +40,6 @@ class AWSCloudDisconnectError(Exception):
 
 class AWSCloudUploadError(Exception):
     pass
+
+class AWSTimeoutError(Exception):
+    pass

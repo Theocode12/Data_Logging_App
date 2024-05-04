@@ -22,7 +22,11 @@ def off_ctrl_c():
 def on_ctrl_s():
     print("ctrl-s on", flush=True)
     manager = Manager.get_instance()
-    manager.handle_command("START-DATA_SAVING")
+    manager.handle_command(
+        "START-DATA_SAVING",
+        "longitude",
+        "latitude",
+    )
 
 
 def off_ctrl_s():
@@ -72,8 +76,8 @@ class KeyboardInputHandler:
     def __init__(self):
         self.hotkeys = keyboard.GlobalHotKeys(
             {
-                "<ctrl>+c": on_activate_c,
-                "<ctrl>+s": on_activate_s,
+                "<ctrl>+u": on_activate_c,
+                "<ctrl>+q": on_activate_s,
                 "<ctrl>+d": on_activate_d,
             }
         )
