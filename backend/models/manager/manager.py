@@ -76,9 +76,6 @@ class CommandHandler:
             "START-DATA_COLLECTION": self.start_data_collection,
             "STOP-DATA_COLLECTION": self.stop_data_collection,
         }
-        # self.is_data_saving = False
-        # self.is_cloud_transfer = False
-        # self.is_data_collection = False
 
     def execute_command(self, command, processes, *args, **kwargs):
         if command in self.command_map:

@@ -5,7 +5,6 @@ from models.exceptions.exception import (
     AWSCloudDisconnectError,
     FileOpenError,
     AWSCloudUploadError,
-    AWSTimeoutError
 )
 from models.db_engine.db import MetaDB
 from models import ModelLogger
@@ -167,7 +166,9 @@ class CloudTransfer:
         try:
             message_json = json.dumps(data)
             pub_future, id = self.mqtt_connection.publish(
-                topic=self.message_topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE
+                topic=self.message_topic,
+                payload=message_json,
+                qos=mqtt.QoS.AT_LEAST_ONCE,
             )
             pub_future.result(timeout)
             CTFlogger.logger.info("Data Published successfully")
@@ -360,7 +361,7 @@ class CloudTransferManager:
                         line = db_connection.readline()
                     if line:
                         data = modify_data_to_dict(line)
-                        self.cloud_transfer.publish(data) #fix publish timeout
+                        self.cloud_transfer.publish(data)  # fix publish timeout
                         db.save_metadata()
             else:
                 try:
