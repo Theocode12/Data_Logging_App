@@ -1,8 +1,10 @@
 __pycache__*
 workload*
 aws-*
-config*
-data*
+**/config
+**/tmp
+**/logs
+**/data
 directory*
 .vscode
 Total*

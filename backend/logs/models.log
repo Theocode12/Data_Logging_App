@@ -1,0 +1,569 @@
+2024-05-04 13:29:34,257 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-04 13:37:54,946 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-04 13:38:37,283 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-04 14:07:17,274 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-04 14:08:12,074 - INFO - db - File Created: /home/Theo/Data_Logging_App/backend/data/2024/05/04.txt
+2024-05-04 14:08:12,075 - INFO - data-saving - Ready to saving to database
+2024-05-04 14:09:59,668 - INFO - data-saving - Ready to saving to database
+2024-05-04 14:10:08,464 - INFO - sensor-manager - Data storage initiated
+2024-05-04 14:10:09,001 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:10:09,003 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:10:14,488 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:10:14,489 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:10:19,925 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:10:19,926 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:10:25,317 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:10:25,318 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:10:30,717 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:10:30,718 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:10:33,924 - INFO - data-saving - Stopped saving data to database
+2024-05-04 14:12:10,858 - INFO - data-saving - Ready to saving to database
+2024-05-04 14:12:18,450 - INFO - sensor-manager - Data storage initiated
+2024-05-04 14:12:19,462 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:12:19,463 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:12:22,883 - INFO - data-saving - Stopped saving data to database
+2024-05-04 14:12:32,587 - INFO - data-saving - Ready to saving to database
+2024-05-04 14:12:32,596 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:12:32,597 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:12:34,905 - INFO - sensor-manager - Data storage initiated
+2024-05-04 14:12:35,319 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:12:35,320 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:12:40,727 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:12:40,727 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:12:46,149 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:12:46,149 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:12:51,550 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:12:51,551 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:12:57,048 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:12:57,049 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:13:02,467 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:13:02,468 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:13:04,519 - INFO - data-saving - Stopped saving data to database
+2024-05-04 14:13:24,067 - INFO - data-saving - Ready to saving to database
+2024-05-04 14:13:24,075 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:13:24,077 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:13:24,077 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:13:24,078 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:13:24,078 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:13:24,079 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:13:24,079 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:13:24,080 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:13:28,950 - INFO - sensor-manager - Data storage initiated
+2024-05-04 14:13:29,359 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438, 'altitude': None, 'speed': None} polled successfully
+2024-05-04 14:13:29,360 - INFO - data-saving - Data: {'longitude': 3.37921, 'latitude': 6.52438} saved successfully
+2024-05-04 14:39:33,828 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-04 14:39:47,230 - INFO - sensor-manager - Data storage initiated
+2024-05-04 14:40:20,385 - INFO - sensor-manager - Data storage stopped
+2024-05-04 14:40:47,789 - INFO - sensor-manager - Data storage initiated
+2024-05-04 14:41:20,369 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-04 15:53:01,781 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-04 15:54:05,361 - INFO - db - Updated metadata saved to file
+2024-05-04 15:54:55,427 - INFO - db - Updated metadata saved to file
+2024-05-04 15:55:00,577 - INFO - db - Updated metadata saved to file
+2024-05-04 15:56:39,880 - INFO - sensor-manager - Data storage initiated
+2024-05-04 15:56:40,584 - INFO - db - Updated metadata saved to file
+2024-05-04 15:56:45,961 - INFO - db - Updated metadata saved to file
+2024-05-04 15:56:51,370 - INFO - db - Updated metadata saved to file
+2024-05-04 15:56:56,686 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:02,089 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:07,489 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:15,541 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:20,942 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:26,377 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:31,772 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:37,092 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:42,483 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:47,864 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:53,315 - INFO - db - Updated metadata saved to file
+2024-05-04 15:57:58,637 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:04,023 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:09,416 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:14,764 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:20,186 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:25,610 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:30,967 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:36,332 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:41,764 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:47,214 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:52,625 - INFO - db - Updated metadata saved to file
+2024-05-04 15:58:58,020 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:03,370 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:08,741 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:14,167 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:19,913 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:25,074 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:30,631 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:36,098 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:41,691 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:47,132 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:52,653 - INFO - db - Updated metadata saved to file
+2024-05-04 15:59:58,144 - INFO - db - Updated metadata saved to file
+2024-05-04 16:00:03,703 - INFO - db - Updated metadata saved to file
+2024-05-04 16:00:09,284 - INFO - db - Updated metadata saved to file
+2024-05-04 16:00:14,720 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:45,123 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:45,518 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:45,916 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:46,316 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:46,719 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:47,138 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:47,559 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:47,928 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:48,303 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:48,703 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:49,090 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:49,476 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:49,867 - INFO - db - Updated metadata saved to file
+2024-05-04 16:10:50,267 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:23,384 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:23,720 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:24,033 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:24,343 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:24,675 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:25,002 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:25,335 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:25,673 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:26,005 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:26,342 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:26,662 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:27,066 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:27,424 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:27,742 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:28,063 - INFO - db - Updated metadata saved to file
+2024-05-04 16:34:28,395 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:44,748 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:45,098 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:45,439 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:45,789 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:46,152 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:46,502 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:46,854 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:47,192 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:47,558 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:47,901 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:48,232 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:48,587 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:48,969 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:49,366 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:49,711 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:50,076 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:50,420 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:50,778 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:51,141 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:51,490 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:51,834 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:52,169 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:52,806 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:53,178 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:53,537 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:53,883 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:54,231 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:54,593 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:54,948 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:55,312 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:55,648 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:55,995 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:56,341 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:56,702 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:57,052 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:57,532 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:57,886 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:58,241 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:58,593 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:59,011 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:59,341 - INFO - db - Updated metadata saved to file
+2024-05-04 16:36:59,878 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:00,203 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:00,569 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:00,923 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:01,280 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:01,638 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:02,003 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:02,352 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:02,681 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:03,022 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:03,361 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:03,698 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:04,029 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:04,361 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:04,702 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:05,047 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:05,391 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:05,800 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:06,142 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:06,487 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:06,839 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:07,171 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:07,578 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:07,929 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:08,290 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:08,627 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:08,987 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:09,325 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:09,727 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:10,079 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:10,431 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:10,759 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:11,075 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:11,395 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:11,727 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:12,061 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:12,628 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:12,967 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:13,303 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:13,636 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:13,990 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:14,355 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:14,753 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:15,098 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:15,445 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:15,795 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:16,141 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:16,462 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:16,781 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:17,117 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:17,716 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:20,307 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:20,624 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:20,933 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:21,248 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:21,564 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:21,872 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:22,183 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:22,489 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:22,802 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:23,100 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:23,428 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:23,722 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:24,012 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:24,313 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:24,596 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:24,956 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:25,253 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:25,564 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:25,877 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:26,238 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:26,570 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:26,882 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:27,199 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:27,496 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:27,782 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:28,069 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:28,353 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:28,659 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:29,004 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:29,315 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:29,603 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:29,902 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:30,205 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:30,542 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:30,874 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:31,194 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:31,503 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:31,801 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:32,116 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:32,415 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:32,716 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:33,024 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:33,334 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:33,671 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:34,203 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:34,650 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:35,091 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:35,476 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:35,884 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:36,270 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:36,667 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:37,063 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:37,462 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:37,852 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:38,259 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:38,643 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:38,674 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-04 16:37:39,043 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:39,433 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:39,834 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:40,229 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:40,607 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:41,023 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:41,426 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:41,834 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:42,234 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:42,634 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:43,067 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:43,471 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:43,859 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:44,257 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:44,654 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:45,047 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:45,464 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:45,872 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:46,268 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:46,665 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:47,074 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:47,473 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:47,857 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:48,239 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:48,656 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:49,062 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:49,464 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:49,856 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:50,249 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:50,646 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:51,035 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:51,419 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:51,797 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:52,196 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:52,594 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:52,970 - INFO - sensor-manager - Data storage stopped
+2024-05-04 16:37:52,991 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:53,384 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:53,786 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:54,195 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:54,605 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:54,993 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:55,366 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:55,770 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:56,161 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:56,532 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:56,904 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:57,284 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:57,675 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:58,063 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:58,456 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:58,855 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:59,274 - INFO - db - Updated metadata saved to file
+2024-05-04 16:37:59,679 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:00,084 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:00,476 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:00,873 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:01,267 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:01,642 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:02,015 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:02,409 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:02,796 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:03,185 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:03,562 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:03,966 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:03,970 - INFO - sensor-manager - Data storage initiated
+2024-05-04 16:38:04,362 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:04,786 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:05,185 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:05,567 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:05,965 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:06,344 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:06,724 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:07,128 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:07,526 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:07,924 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:08,312 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:08,698 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:09,084 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:09,481 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:09,894 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:10,277 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:10,673 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:11,048 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:11,437 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:11,843 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:12,224 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:12,621 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:13,027 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:13,460 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:13,853 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:14,245 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:14,642 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:15,019 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:15,412 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:15,813 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:16,224 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:16,635 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:17,017 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:17,418 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:17,812 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:18,207 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:18,628 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:19,038 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:19,431 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:19,817 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:20,218 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:20,612 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:21,006 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:21,406 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:21,826 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:22,245 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:23,157 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:23,574 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:23,964 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:24,376 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:24,772 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:25,187 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:25,586 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:25,993 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:26,398 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:26,791 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:27,217 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:27,604 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:27,998 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:28,409 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:28,807 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:29,199 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:29,590 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:30,005 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:30,399 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:30,797 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:31,173 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:31,564 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:31,996 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:32,455 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:32,846 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:33,243 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:33,637 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:34,039 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:34,480 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:34,855 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:35,240 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:35,628 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:36,006 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:36,409 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:36,801 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:37,189 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:37,645 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:38,134 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:38,558 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:38,977 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:39,365 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:39,758 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:40,133 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:40,535 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:40,935 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:41,332 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:41,709 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:42,100 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:42,504 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:42,959 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:43,360 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:43,774 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:44,188 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:44,590 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:44,982 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:45,352 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:45,734 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:46,118 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:46,505 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:46,914 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:47,330 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:47,722 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:48,104 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:48,515 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:48,911 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:49,312 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:49,707 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:50,107 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:50,499 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:50,933 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:51,353 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:51,749 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:52,127 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:52,524 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:52,916 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:53,328 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:53,725 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:54,113 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:54,529 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:54,937 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:55,328 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:55,743 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:56,124 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:56,524 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:56,919 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:57,310 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:57,709 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:58,150 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:58,560 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:58,943 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:59,323 - INFO - db - Updated metadata saved to file
+2024-05-04 16:38:59,720 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:00,159 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:00,564 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:00,960 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:01,351 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:01,747 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:02,156 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:02,559 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:02,953 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:03,339 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:03,726 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:04,128 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:04,514 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:04,914 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:05,342 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:05,743 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:06,173 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:06,576 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:07,109 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:07,495 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:07,878 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:08,263 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:08,633 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:09,013 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:10,694 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:16,275 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:21,687 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:27,268 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:32,778 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:38,144 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:43,614 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:49,102 - INFO - db - Updated metadata saved to file
+2024-05-04 16:39:54,567 - INFO - db - Updated metadata saved to file
+2024-05-04 16:40:00,124 - INFO - db - Updated metadata saved to file
+2024-05-04 16:40:05,488 - INFO - db - Updated metadata saved to file
+2024-05-04 16:40:11,070 - INFO - db - Updated metadata saved to file
+2024-05-04 16:40:16,505 - INFO - db - Updated metadata saved to file
+2024-05-04 16:40:43,174 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-05 10:41:13,962 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-05 12:29:36,413 - INFO - db - File Created: /home/Theo/Data_Logging_App/backend/data/2024/05/05.txt
+2024-05-05 12:31:15,730 - INFO - sensor-manager - Data storage initiated
+2024-05-05 12:31:26,495 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-05 12:31:54,460 - INFO - sensor-manager - Data storage initiated
+2024-05-05 12:32:16,922 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-05 12:32:20,449 - INFO - sensor-manager - Data storage initiated
+2024-05-05 12:32:36,854 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-05 12:33:05,515 - INFO - sensor-manager - Data storage initiated
+2024-05-05 19:06:06,000 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-05 20:10:56,045 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-05 20:10:56,045 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-05 20:13:22,401 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-05 20:17:03,996 - INFO - sensor-manager - Data storage initiated
+2024-05-05 20:17:24,000 - INFO - sensor-manager - Data storage stopped
+2024-05-05 20:17:44,005 - INFO - sensor-manager - Data storage initiated
+2024-05-05 20:18:04,008 - INFO - sensor-manager - Data storage stopped
+2024-05-05 20:18:24,012 - INFO - sensor-manager - Data storage initiated
+2024-05-05 20:40:18,921 - INFO - sensor-manager - Data storage initiated
+2024-05-05 20:59:19,061 - INFO - sensor-manager - Data storage stopped
+2024-05-06 09:09:12,538 - INFO - sensor-manager - Data Collection From Sensor Stopped
+2024-05-06 17:42:50,987 - INFO - db - File Created: /home/Theo/Data_Logging_App/backend/data/2024/05/06.txt
+2024-05-06 17:42:52,943 - INFO - sensor-manager - Data storage initiated
+2024-05-06 17:43:33,159 - INFO - db - Updated metadata saved to file
+2024-05-06 17:43:40,282 - INFO - db - Updated metadata saved to file
+2024-05-06 17:43:43,298 - INFO - db - Updated metadata saved to file
+2024-05-06 17:43:45,904 - INFO - db - Updated metadata saved to file
+2024-05-06 17:43:58,631 - INFO - db - Updated metadata saved to file
+2024-05-06 17:44:01,038 - INFO - db - Updated metadata saved to file
+2024-05-06 17:44:03,441 - INFO - db - Updated metadata saved to file
+2024-05-06 17:44:26,856 - INFO - db - Updated metadata saved to file
+2024-05-06 17:44:29,222 - INFO - db - Updated metadata saved to file
+2024-05-06 17:44:31,654 - INFO - db - Updated metadata saved to file
+2024-05-06 17:45:10,290 - INFO - db - Updated metadata saved to file
+2024-05-06 17:45:14,111 - INFO - db - Updated metadata saved to file
+2024-05-06 17:45:16,476 - INFO - db - Updated metadata saved to file
+2024-05-06 17:45:18,732 - INFO - db - Updated metadata saved to file
+2024-05-06 17:45:21,114 - INFO - db - Updated metadata saved to file
+2024-05-06 17:45:38,849 - INFO - db - Updated metadata saved to file
+2024-05-06 17:45:59,271 - INFO - db - Updated metadata saved to file
+2024-05-08 10:00:28,415 - INFO - db - File Created: /home/Theo/Data_Logging_App/backend/data/2024/05/08.txt
+2024-05-08 10:00:44,257 - INFO - sensor-manager - Data storage initiated
+2024-05-08 10:12:13,063 - INFO - sensor-manager - Data storage initiated
+2024-05-08 10:13:58,130 - INFO - sensor-manager - Data storage stopped
+2024-05-08 10:14:22,093 - INFO - db - File Created: /home/Theo/Data_Logging_App/backend/data/2024/05/08.txt
+2024-05-08 10:14:36,050 - INFO - sensor-manager - Data storage initiated

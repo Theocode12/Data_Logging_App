@@ -13,7 +13,7 @@ class SensorManagerlogger:
 
 
 class SensorDataManager:
-    COLLECTION_INTERVAL: Optional[int] = 5
+    COLLECTION_INTERVAL: Optional[int] = 10
 
     def __init__(self):
         self.data = {}
@@ -88,4 +88,4 @@ class SensorDataManager:
                 db_lines = 0
 
             db_lines += 1
-            sleep(self.COLLECTION_INTERVAL)
+            sleep(20)

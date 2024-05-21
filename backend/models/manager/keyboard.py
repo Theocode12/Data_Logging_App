@@ -26,6 +26,7 @@ def on_ctrl_s():
         "START-DATA_SAVING",
         "longitude",
         "latitude",
+        'altitude'
     )
 
 

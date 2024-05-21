@@ -76,6 +76,7 @@ class CommandHandler:
             "START-DATA_COLLECTION": self.start_data_collection,
             "STOP-DATA_COLLECTION": self.stop_data_collection,
         }
+        self.data_saving = False
 
     def execute_command(self, command, processes, *args, **kwargs):
         if command in self.command_map:
@@ -94,6 +95,7 @@ class CommandHandler:
             )
             process.start()
             Manager.send_cmd_sdm.send("START")
+            self.data_saving = True
             Managerlogger.logger.info("start-Data_saving command successfully Executed")
             return self.status_generator(
                 status="success",
@@ -127,6 +129,7 @@ class CommandHandler:
                     message="DSM Process is still alive",
                 )
             Manager.send_cmd_sdm.send("STOP")
+            self.data_saving = False
             Managerlogger.logger.info("stop-Data_saving command successfully Executed")
             return self.status_generator(
                 status="success",
@@ -154,6 +157,8 @@ class CommandHandler:
                 process_name, sdm_instance, Manager.recv_cmd_sdm, Manager.send_data_sdm
             )
             process.start()
+            if self.data_saving:
+                Manager.send_cmd_sdm.send("START")
             return self.status_generator(
                 status="success",
                 process=process,
@@ -273,7 +278,7 @@ class CommandHandler:
         instance.run(com_pipe, data_pipe)
 
     def process_generator(self, name, *args):  # check weather to name the process
-        return Process(target=self.process_target, args=args, daemon=True, name=name)
+        return Process(target=self.process_target, args=args, daemon=False, name=name)
 
 
 if __name__ == "__main__":
