@@ -46,5 +46,10 @@ def modify_data_to_dict(line: str) -> Dict[str, Union[str, float]]:
     data_dict = {}
     for datum in data:
         param, value = datum.split("=")
-        data_dict[param.strip()] = value.strip()
+        if value == "None":
+            value = None
+        else:
+            value = value.strip()
+        data_dict[param.strip()] = value
+
     return data_dict
