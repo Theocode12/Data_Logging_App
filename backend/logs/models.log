@@ -567,3 +567,6 @@
 2024-05-08 10:13:58,130 - INFO - sensor-manager - Data storage stopped
 2024-05-08 10:14:22,093 - INFO - db - File Created: /home/Theo/Data_Logging_App/backend/data/2024/05/08.txt
 2024-05-08 10:14:36,050 - INFO - sensor-manager - Data storage initiated
+2024-05-22 02:26:03,265 - INFO - db - File Created: /home/Theo/Data_Logging_App/backend/data/2024/05/22.txt
+2024-05-22 02:26:20,318 - INFO - sensor-manager - Data storage initiated
+2024-05-22 02:27:01,124 - INFO - sensor-manager - Data storage stopped

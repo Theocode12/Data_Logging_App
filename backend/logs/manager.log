@@ -1,0 +1,8 @@
+2024-05-22 02:24:37,883 - INFO - manager - Handling command: START-DATA_COLLECTION
+2024-05-22 02:26:03,262 - INFO - manager - Handling command: START-DATA_SAVING
+2024-05-22 02:26:03,271 - INFO - manager - start-Data_saving command successfully Executed
+2024-05-22 02:26:54,097 - INFO - manager - Handling command: STOP-DATA_SAVING
+2024-05-22 02:26:54,098 - INFO - manager - Command for termination of saving process sent
+2024-05-22 02:26:54,102 - INFO - manager - stop-Data_saving command successfully Executed
+2024-05-22 02:27:26,158 - INFO - manager - Handling command: STOP-DATA_COLLECTION
+2024-05-22 02:27:26,159 - INFO - manager - Command for termination of data collection process sent

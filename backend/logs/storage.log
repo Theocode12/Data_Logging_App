@@ -1,0 +1,6 @@
+2024-05-22 02:26:03,266 - INFO - data-saving - Ready to saving to database
+2024-05-22 02:26:20,738 - INFO - data-saving - Data: {'longitude': 7.6049, 'latitude': 12.996, 'altitude': None, 'speed': None, 'time': '02:26:20', 'date': '2024-05-22'} polled successfully
+2024-05-22 02:26:20,738 - INFO - data-saving - Data: {'longitude': 7.6049, 'latitude': 12.996, 'altitude': None} saved successfully
+2024-05-22 02:26:41,123 - INFO - data-saving - Data: {'longitude': 7.6049, 'latitude': 12.996, 'altitude': None, 'speed': None, 'time': '02:26:41', 'date': '2024-05-22'} polled successfully
+2024-05-22 02:26:41,124 - INFO - data-saving - Data: {'longitude': 7.6049, 'latitude': 12.996, 'altitude': None} saved successfully
+2024-05-22 02:26:54,098 - INFO - data-saving - Stopped saving data to database
