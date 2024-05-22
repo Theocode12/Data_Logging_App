@@ -1,5 +1,7 @@
+from models.db_engine.db import TempDB, FileDB
 from pynput import keyboard
 from .manager import Manager
+from util import modify_data_to_dict
 import signal
 
 
@@ -22,11 +24,25 @@ def off_ctrl_c():
 def on_ctrl_s():
     print("ctrl-s on", flush=True)
     manager = Manager.get_instance()
+    sensors = get_active_sensors()
     manager.handle_command(
         "START-DATA_SAVING",
-        "longitude",
-        "latitude",
+        *sensors
     )
+
+def get_active_sensors(line: list = None):
+    tmp_db = TempDB()
+    path = tmp_db.get_tmp_db_path()
+    activate_sensor = []
+    if line is None:
+        with FileDB(path, 'r') as db:
+            lines = db.readlines()
+
+    data = modify_data_to_dict(line[-1]) # Urgeent fix is needed
+    for sensor, value in data.items():
+        if value is not None:
+            activate_sensor.append(sensor)
+    return activate_sensor
 
 
 def off_ctrl_s():
