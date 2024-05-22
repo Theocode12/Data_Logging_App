@@ -18,7 +18,6 @@ class TestGPSLogging(unittest.TestCase):
         tracemalloc.start()
 
     def setUp(self):
-
         ModelLogger.__bases__ = (Fake.imitate(BaseLogger, logging.Logger),)
         self.logger = ModelLogger("models.sensors.gps").customiseLogger()
         self.tracker = GPS(self.logger)
