@@ -504,7 +504,7 @@ class TempDB:
     def __init__(self):
         self.tmp_db_path = self.get_tmp_db_path()
 
-    def get_current_db_lines(self):
+    def get_current_no_of_lines(self):
         with FileDB(self.tmp_db_path, "r") as db:
             lines = db.readlines()
         return len(lines)
