@@ -30,15 +30,16 @@ def on_ctrl_s():
         *sensors
     )
 
-def get_active_sensors(line: list = None):
+def get_active_sensors(line: str = None):
     tmp_db = TempDB()
     path = tmp_db.get_tmp_db_path()
     activate_sensor = []
     if line is None:
         with FileDB(path, 'r') as db:
             lines = db.readlines()
+        line = lines[-1]
 
-    data = modify_data_to_dict(line[-1]) # Urgeent fix is needed
+    data = modify_data_to_dict(line)
     for sensor, value in data.items():
         if value is not None:
             activate_sensor.append(sensor)
