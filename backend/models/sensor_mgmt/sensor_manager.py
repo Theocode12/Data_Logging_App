@@ -63,7 +63,7 @@ class SensorDataManager:
 
     def run(self, comm_pipe: Connection, data_pipe: Connection):
         send_data = False
-        db_lines = self.tmp_db.get_current_db_lines()
+        db_lines = self.tmp_db.get_current_no_of_lines()
         while True:
             if comm_pipe.poll():
                 command = comm_pipe.recv()
