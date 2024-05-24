@@ -15,26 +15,59 @@ import io
 
 
 class DBlogger:
+    """
+    The DBlogger class represents a logger for database operations.
+
+    It provides a logger instance for logging database-related events.
+    """
+
     logger = ModelLogger("db").customiseLogger()
 
 
 class FileDB:
-
     """
-    The DB class represents a simple file-based database manager.
+    The FileDB class represents a simple file-based database manager.
 
     It provides methods for opening, closing, reading, and writing to files, as well as managing metadata.
+
+    Attributes:
+    - target (Optional[str]): The target file path.
+    - fd (Optional[io.TextIOWrapper]): The file descriptor for the open file.
+    - mode (Optional[str]): The mode in which to open the file ('r' for reading, 'w' for writing, etc.).
+
+    Methods:
+    - __init__(target: Optional[str] = None, mode: Optional[str] = None): Initialize the FileDB instance.
+    - __enter__() -> "FileDB": Enter the context manager and open the file.
+    - __exit__(exc_type, exc_value, trace) -> None: Exit the context manager and close the file.
+    - create_dir(dir: str) -> str: Create a directory.
+    - remove_dir(dir: str) -> str: Remove a directory.
+    - create_file(path: Optional[str] = None) -> str: Create a file.
+    - delete_file(path: str) -> None: Delete a file.
+    - file_exits(path: str) -> bool: Check if a file exists.
+    - get_db_filepath() -> str: Get the file path for the database based on the current date.
+    - set_target(path: str) -> str: Set the target file path for the database.
+    - open(path: Optional[str] = None, mode: str = "r+") -> io.TextIOWrapper: Open a file for reading or writing.
+    - close() -> None: Close the currently open file.
+    - write(data: str) -> int: Write data to the open file.
+    - write_data_line(data: Dict[str, Any]) -> int: Write a dictionary as a line to the open file.
+    - readline() -> str: Read a line from the open file.
+    - readlines() -> List[str]: Read all lines from the open file.
     """
 
     def __init__(
         self, target: Optional[str] = None, mode: Optional[str] = None
     ) -> None:
         """
-        Initialize the DB instance.
+        Initialize the FileDB instance.
+
+        Args:
+        - target (Optional[str]): The target file path.
+        - mode (Optional[str]): The mode in which to open the file ('r' for reading, 'w' for writing, etc.).
 
         Attributes:
         - target: The target file path.
         - fd: The file descriptor for the open file.
+        - mode: The mode in which to open the file.
         """
         self.target = target
         self.fd: io.TextIOWrapper = None
@@ -45,7 +78,7 @@ class FileDB:
         Enter the context manager. Open the file for reading and writing.
 
         Returns:
-        The FileDB instance.
+        - The FileDB instance.
         """
         self.open(
             path=self.target,
@@ -76,7 +109,7 @@ class FileDB:
         - dir (str): The directory path.
 
         Returns:
-        The created directory path.
+        - The created directory path.
 
         Raises:
         - CreateDirectoryError: If an error occurs while creating the directory.
@@ -97,7 +130,7 @@ class FileDB:
         - dir (str): The directory path.
 
         Returns:
-        The removed directory path.
+        - The removed directory path.
 
         Raises:
         - RemoveDirectoryError: If an error occurs while removing the directory.
@@ -118,7 +151,7 @@ class FileDB:
         - path (Optional[str]): The file path.
 
         Returns:
-        The created file path.
+        - The created file path.
 
         Raises:
         - FileOpenError: If an error occurs while creating or opening the file.
@@ -156,7 +189,7 @@ class FileDB:
         - path (str): The file path.
 
         Returns:
-        True if the file exists, False otherwise.
+        - True if the file exists, False otherwise.
         """
         return os.path.exists(path)
 
@@ -165,7 +198,7 @@ class FileDB:
         Get the file path for the database based on the current date.
 
         Returns:
-        The generated file path.
+        - The generated file path.
         """
         now = datetime.now()
         year, month, day = now.year, now.month, now.day
@@ -178,15 +211,15 @@ class FileDB:
         self.create_dir(dir)
         return os.path.join(dir, f"{day:02d}.txt")
 
-    def set_target(self, path) -> str:
+    def set_target(self, path: str) -> str:
         """
         Set the target file path for the database.
 
         Args:
-        - path: The target file path.
+        - path (str): The target file path.
 
         Returns:
-        The target file path.
+        - The target file path.
         """
         self.close()  # For safety because fd doesn't correspond to target
         self.target = path
@@ -201,7 +234,7 @@ class FileDB:
         - mode (str): The mode in which to open the file ('r' for reading, 'w' for writing, etc.).
 
         Returns:
-        The file descriptor.
+        - The file descriptor.
 
         Raises:
         - FileOpenError: If an error occurs while opening the file.
@@ -236,7 +269,7 @@ class FileDB:
         - data (str): The data to write to the file.
 
         Returns:
-        The number of bytes written.
+        - The number of bytes written.
 
         Raises:
         - FileWriteError: If an error occurs while writing to the file.
@@ -258,7 +291,7 @@ class FileDB:
         - data (Dict[str, Any]): The data to write as a line.
 
         Returns:
-        The number of bytes written.
+        - The number of bytes written.
 
         Raises:
         - FileWriteError: If an error occurs while writing to the file.
@@ -271,7 +304,7 @@ class FileDB:
         Read a line from the open file.
 
         Returns:
-        The read line.
+        - The read line.
 
         Raises:
         - FileReadError: If an error occurs while reading from the file.
@@ -292,7 +325,7 @@ class FileDB:
         Read all lines from the open file.
 
         Returns:
-        The read lines.
+        - The read lines.
 
         Raises:
         - FileReadError: If an error occurs while reading from the file.
@@ -313,6 +346,22 @@ class MetaDB(FileDB):
     """
     MetaDB is a class representing a metadata database that extends FileDB.
     It provides methods for retrieving, updating, saving, and clearing metadata.
+
+    Attributes:
+    - meta (Dict[str, Any]): A dictionary to store metadata.
+    - metadata_lines (List[str]): A list of lines in the metadata file.
+
+    Methods:
+    - __init__(): Initialize a MetaDB instance.
+    - retrieve_metadata_lines(path: Optional[str] = None, forcedb: bool = True) -> List[str]: Retrieve lines from a metadata file.
+    - update_metadata_lines(meta: Dict[str, Any] = {}) -> List[str]: Update lines in the metadata file with provided metadata.
+    - retrieve_metadata(path: Optional[str] = None, meta: List[str] = [], forcedb: bool = True) -> Dict[str, str]: Retrieve metadata from a file.
+    - save_metadata(path: Optional[str] = None, meta: Optional[Dict[str, Any]] = None) -> None: Save metadata to a file.
+    - clear_metadata() -> None: Clear the metadata stored in the instance.
+    - update_metadata(newmeta: Dict[str, str]) -> Dict[str, str]: Update the metadata with the provided key-value pairs.
+    - readline(offset: int = None) -> str: Read a line from the open file.
+    - readlines(offset: int = None) -> List[str]: Read all lines from the open file.
+    - get_metadata_path() -> str: Get the path to the metadata file.
     """
 
     def __init__(self):
@@ -321,14 +370,14 @@ class MetaDB(FileDB):
 
         Attributes:
         - meta: A dictionary to store metadata.
-        - metadata_lines: A list of lines in the metadata
+        - metadata_lines: A list of lines in the metadata.
         """
         self.meta = {}
         self.metadata_lines: List[str] = []
         super().__init__()
 
     def retrieve_metadata_lines(
-        self, path: Optional[str] = None, forcedb=True
+        self, path: Optional[str] = None, forcedb: bool = True
     ) -> List[str]:
         """
         Retrieve lines from a metadata file.
@@ -338,7 +387,7 @@ class MetaDB(FileDB):
         - forcedb (bool): Whether to force querying the database.
 
         Returns:
-        A list of lines from the metadata file.
+        - List[str]: A list of lines from the metadata file.
         """
         if not path:
             path = self.get_metadata_path()
@@ -359,7 +408,7 @@ class MetaDB(FileDB):
         - meta (Dict): Key-value pairs to update in the metadata.
 
         Returns:
-        The updated list of lines from the metadata file.
+        - List[str]: The updated list of lines from the metadata file.
         """
         meta = meta or self.meta
         keys = set(meta.keys())
@@ -385,10 +434,8 @@ class MetaDB(FileDB):
         - forcedb (bool): Whether to force query the database.
 
         Returns:
-        The retrieved metadata.
-
+        - Dict[str, str]: The retrieved metadata.
         """
-
         lines = self.retrieve_metadata_lines(path, forcedb)
         for line in lines:
             if not line.startswith("#") and "=" in line:
@@ -431,9 +478,6 @@ class MetaDB(FileDB):
         Clear the metadata stored in the instance.
 
         This method resets the metadata dictionary to an empty state.
-
-        Returns:
-        None
         """
         self.meta = {}
 
@@ -445,7 +489,7 @@ class MetaDB(FileDB):
         - newmeta (Dict): Key-value pairs to update in the metadata.
 
         Returns:
-        The updated metadata.
+        - Dict[str, str]: The updated metadata.
         """
         if newmeta:
             self.meta.update(newmeta)
@@ -453,24 +497,23 @@ class MetaDB(FileDB):
 
     def readline(self, offset: int = None) -> str:
         """
-        Read line from the open file.
+        Read a line from the open file.
 
         Args:
         - offset (int): Metadata to determine the file offset.
 
         Returns:
-        The read line.
+        - str: The read line.
 
         Raises:
         - Exception: If an error occurs while reading from the file.
         """
-
         self.fd.seek(offset or self.meta.get("Offset", 0))
         line = super().readline()
         self.update_metadata({"Offset": self.fd.tell()})
         return line
 
-    def readlines(self, offset=None) -> List[str]:
+    def readlines(self, offset: int = None) -> List[str]:
         """
         Read all lines from the open file.
 
@@ -478,7 +521,7 @@ class MetaDB(FileDB):
         - offset (int): Metadata to determine the file offset.
 
         Returns:
-        The list of read lines.
+        - List[str]: The list of read lines.
         """
         if offset is not None:
             self.fd.seek(offset)
@@ -491,35 +534,79 @@ class MetaDB(FileDB):
         Get the path to the metadata file.
 
         Returns:
-        The path to the metadata file.
+        - str: The path to the metadata file.
         """
-
         return os.path.join("{}".format(get_base_path()), "config", "meta.txt")
 
 
 class TempDB:
+    """
+    Manages a temporary database with a limited number of lines.
+
+    Attributes:
+    - MAX_DB_LINES (int): Maximum number of lines allowed in the temporary database.
+    - MIN_DB_LINES (int): Minimum number of lines to retain during cleanup.
+    - tmp_db_path (str): Path to the temporary database file.
+
+    Methods:
+    - __init__(self): Initialize the TempDB instance and set up the temporary database path.
+    - get_current_no_of_lines(self) -> int: Get the current number of lines in the temporary database.
+    - get_tmp_db_path(self) -> str: Retrieve the temporary database path from environment variables.
+    - save_to_tmp_db(self, data) -> None: Save data to the temporary database.
+    - clean_up_tmp_db(self) -> None: Clean up the temporary database by retaining only the minimum required lines.
+    """
+
     MAX_DB_LINES = 20
     MIN_DB_LINES = 2
 
     def __init__(self):
+        """
+        Initialize the TempDB instance and set up the temporary database path.
+        """
         self.tmp_db_path = self.get_tmp_db_path()
 
-    def get_current_no_of_lines(self):
+    def get_current_no_of_lines(self) -> int:
+        """
+        Get the current number of lines in the temporary database.
+
+        Returns:
+        - int: The number of lines currently in the temporary database.
+        """
         with FileDB(self.tmp_db_path, "r") as db:
             lines = db.readlines()
         return len(lines)
 
     def get_tmp_db_path(self) -> str:
+        """
+        Retrieve the temporary database path from environment variables.
+
+        Returns:
+        - str: The path to the temporary database.
+
+        Raises:
+        - ValueError: If the temporary database path is not set in environment variables.
+        """
         try:
             return env_variables()["tmp_db_path"]
         except:
             raise ValueError("No tmp_db in Environment variable")
 
-    def save_to_tmp_db(self, data):
+    def save_to_tmp_db(self, data) -> None:
+        """
+        Save data to the temporary database.
+
+        Parameters:
+        - data: The data to be saved.
+        """
         with FileDB(self.tmp_db_path, "a") as db:
             db.write_data_line(data)
 
-    def clean_up_tmp_db(self):
+    def clean_up_tmp_db(self) -> None:
+        """
+        Clean up the temporary database by retaining only the minimum required lines.
+
+        Retains the last MIN_DB_LINES lines and removes the rest.
+        """
         try:
             with FileDB(self.tmp_db_path, "r") as db:
                 lines = db.readlines()

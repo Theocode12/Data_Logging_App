@@ -17,6 +17,18 @@ class Managerlogger:
 
 
 class Manager:
+    """
+    Manager class is a singleton that manages inter-process communication, processes, and command handling.
+
+    Attributes:
+    - pipes (dict): A dictionary to store pipe connections.
+    - send_cmd_dsm, recv_cmd_dsm: Pipes for DSM command communication.
+    - send_cmd_sdm, recv_cmd_sdm: Pipes for SDM command communication.
+    - send_cmd_ctm, recv_cmd_ctm: Pipes for CTM command communication.
+    - send_data_sdm, recv_data_dsm: Pipes for SDM data communication.
+    - _instance (Manager): The singleton instance of the Manager class.
+    """
+
     pipes = {}
     send_cmd_dsm, recv_cmd_dsm = Pipe()
     send_cmd_sdm, recv_cmd_sdm = Pipe()
@@ -26,25 +38,61 @@ class Manager:
     _instance = None
 
     def __new__(cls):
+        """
+        Override the __new__ method to implement the singleton pattern.
+        """
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self) -> None:
+        """
+        Initialize the Manager instance.
+
+        Attributes:
+        - processes (dict): A dictionary to store processes.
+        - cmd_hdlr (CommandHandler): An instance of the CommandHandler class.
+        """
         self.processes = {}
         self.cmd_hdlr = CommandHandler()
 
     @classmethod
     def get_pipes_connections(cls, name):
+        """
+        Get the pipe connections for a given name.
+
+        Args:
+        - name (str): The name of the pipe connection.
+
+        Returns:
+        - The pipe connections associated with the name.
+        """
         return cls.pipes.get(name)
 
     @classmethod
     def get_instance(cls):
+        """
+        Get the singleton instance of the Manager class.
+
+        Returns:
+        - The singleton instance of the Manager class.
+        """
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
 
     def handle_command(self, command, *args, **kwargs) -> dict:
+        """
+        Handle a command by executing it through the CommandHandler and updating the process list.
+
+        Args:
+        - command (str): The command to handle.
+        - args: Additional positional arguments for the command.
+        - kwargs: Additional keyword arguments for the command.
+
+        Returns:
+        - dict: The status of the command execution.
+        """
         Managerlogger.logger.info(f"Handling command: {command}")
         status = self.cmd_hdlr.execute_command(command, self, *args, **kwargs)
         self.update_processes(status.get("process_name"), status.get("process"))
@@ -54,20 +102,60 @@ class Manager:
         return status
 
     def get_process(self, process_name) -> Process:
+        """
+        Get a process by its name.
+
+        Args:
+        - process_name (str): The name of the process.
+
+        Returns:
+        - Process: The process associated with the name.
+        """
         return self.processes.get(process_name)
 
     def get_processes(self):
+        """
+        Get all processes managed by the Manager.
+
+        Returns:
+        - dict: A dictionary of all processes.
+        """
         return self.processes
 
     def update_processes(self, process_name, process):
+        """
+        Update the processes dictionary with a new process.
+
+        Args:
+        - process_name (str): The name of the process.
+        - process (Process): The process instance.
+        """
         self.processes[process_name] = process
 
     def remove_process(self, process_name):
+        """
+        Remove a process from the processes dictionary.
+
+        Args:
+        - process_name (str): The name of the process to remove.
+        """
         self.processes.pop(process_name)
 
 
 class CommandHandler:
+    """
+    Handles execution of various commands related to data saving, cloud transfer,
+    and data collection.
+
+    Attributes:
+    - command_map (dict): Maps commands to their corresponding handler methods.
+    - data_saving (bool): Indicates if data saving is currently active.
+    """
+
     def __init__(self):
+        """
+        Initializes the CommandHandler with a command map and data saving status.
+        """
         self.command_map = {
             "START-DATA_SAVING": self.start_data_saving,
             "STOP-DATA_SAVING": self.stop_data_saving,
@@ -79,12 +167,36 @@ class CommandHandler:
         self.data_saving = False
 
     def execute_command(self, command, processes, *args, **kwargs):
+        """
+        Executes the given command by invoking the corresponding method.
+
+        Args:
+        - command (str): The command to execute.
+        - processes: The processes manager.
+        - args: Additional positional arguments for the command handler.
+        - kwargs: Additional keyword arguments for the command handler.
+
+        Returns:
+        - dict: The status of the command execution, if the command is recognized.
+        """
         if command in self.command_map:
             return self.command_map[command](command, processes, *args, **kwargs)
         else:
             Managerlogger.logger.info(f"Unknown command {command}")
 
     def start_data_saving(self, command, caller: Manager, *args, **kwargs):
+        """
+        Starts the data saving process.
+
+        Args:
+        - command (str): The command string.
+        - caller (Manager): The manager instance invoking this command.
+        - args: Sensor names to be passed to the StorageManager.
+        - kwargs: Additional keyword arguments.
+
+        Returns:
+        - dict: The status of the command execution.
+        """
         process_name = self.get_process_name_from_command(command)
         if (not caller.get_process(process_name)) or (
             not caller.get_process(process_name).is_alive()
@@ -111,9 +223,31 @@ class CommandHandler:
         )
 
     def status_generator(self, *args, **kwargs):
+        """
+        Generates a status dictionary.
+
+        Args:
+        - args: Additional positional arguments.
+        - kwargs: Additional keyword arguments.
+
+        Returns:
+        - dict: The generated status dictionary.
+        """
         return kwargs
 
     def stop_data_saving(self, command, caller: Manager, *args, **kwargs):
+        """
+        Stops the data saving process.
+
+        Args:
+        - command (str): The command string.
+        - caller (Manager): The manager instance invoking this command.
+        - args: Additional positional arguments.
+        - kwargs: Additional keyword arguments.
+
+        Returns:
+        - dict: The status of the command execution.
+        """
         process_name = self.get_process_name_from_command(command)
         process = caller.get_process(process_name)
         if process and process.is_alive():
@@ -148,6 +282,18 @@ class CommandHandler:
         )
 
     def start_data_collection(self, command, caller, *args, **kwargs):
+        """
+        Starts the data collection process.
+
+        Args:
+        - command (str): The command string.
+        - caller: The manager instance invoking this command.
+        - args: Additional positional arguments for the command handler.
+        - kwargs: Additional keyword arguments for the command handler.
+
+        Returns:
+        - dict: The status of the command execution.
+        """
         process_name = self.get_process_name_from_command(command)
         if (not caller.get_process(process_name)) or (
             not caller.get_process(process_name).is_alive()
@@ -173,9 +319,29 @@ class CommandHandler:
         )
 
     def start_command_helper(self, caller, process_name, obj):
+        """
+        Helper method for starting a command process.
+
+        Args:
+        - caller: The manager instance invoking this command.
+        - process_name (str): The name of the process to start.
+        - obj: The object associated with the process to start.
+        """
         pass
 
     def stop_data_collection(self, command, caller, *args, **kwargs):
+        """
+        Stops the data collection process.
+
+        Args:
+        - command (str): The command string.
+        - caller: The manager instance invoking this command.
+        - args: Additional positional arguments for the command handler.
+        - kwargs: Additional keyword arguments for the command handler.
+
+        Returns:
+        - dict: The status of the command execution.
+        """
         process_name = self.get_process_name_from_command(command)
         process = caller.get_process(process_name)
         if process and process.is_alive():
@@ -211,6 +377,18 @@ class CommandHandler:
         )
 
     def start_cloud_transfer(self, command, caller, *args, **kwargs):
+        """
+        Starts the cloud transfer process.
+
+        Args:
+        - command (str): The command string.
+        - caller: The manager instance invoking this command.
+        - args: Additional positional arguments for the command handler.
+        - kwargs: Additional keyword arguments for the command handler.
+
+        Returns:
+        - dict: The status of the command execution.
+        """
         process_name = self.get_process_name_from_command(command)
         if (not caller.get_process(process_name)) or (
             not caller.get_process(process_name).is_alive()
@@ -234,6 +412,18 @@ class CommandHandler:
         )
 
     def stop_cloud_transfer(self, command, caller, *args, **kwargs):
+        """
+        Stops the cloud transfer process.
+
+        Args:
+        - command (str): The command string.
+        - caller: The manager instance invoking this command.
+        - args: Additional positional arguments for the command handler.
+        - kwargs: Additional keyword arguments for the command handler.
+
+        Returns:
+        - dict: The status of the command execution.
+        """
         process_name = self.get_process_name_from_command(command)
         process = caller.get_process(process_name)
         if process and process.is_alive():
@@ -243,7 +433,6 @@ class CommandHandler:
             )
             process.join()
             if process.is_alive():
-                # process.terminate()
                 return self.status_generator(
                     status="failed",
                     process=process,
@@ -271,13 +460,40 @@ class CommandHandler:
 
     @staticmethod
     def get_process_name_from_command(command):
+        """
+        Extracts the process name from the command string.
+
+        Args:
+        - command (str): The command string.
+
+        Returns:
+        - str: The process name extracted from the command.
+        """
         return command.split("-")[1].lower()
 
     @staticmethod
     def process_target(instance, com_pipe, data_pipe):
+        """
+        Target function for the process.
+
+        Args:
+        - instance: The instance to run.
+        - com_pipe: The communication pipe.
+        - data_pipe: The data pipe.
+        """
         instance.run(com_pipe, data_pipe)
 
-    def process_generator(self, name, *args):  # check weather to name the process
+    def process_generator(self, name, *args):
+        """
+        Generates a new process.
+
+        Args:
+        - name (str): The name of the process.
+        - args: Additional arguments for the process target.
+
+        Returns:
+        - Process: The generated process instance.
+        """
         return Process(target=self.process_target, args=args, daemon=False, name=name)
 
 

@@ -25,17 +25,15 @@ def on_ctrl_s():
     print("ctrl-s on", flush=True)
     manager = Manager.get_instance()
     sensors = get_active_sensors()
-    manager.handle_command(
-        "START-DATA_SAVING",
-        *sensors
-    )
+    manager.handle_command("START-DATA_SAVING", *sensors)
+
 
 def get_active_sensors(line: str = None):
     tmp_db = TempDB()
     path = tmp_db.get_tmp_db_path()
     activate_sensor = []
     if line is None:
-        with FileDB(path, 'r') as db:
+        with FileDB(path, "r") as db:
             lines = db.readlines()
         line = lines[-1]
 
@@ -90,7 +88,18 @@ def on_activate_d():
 
 
 class KeyboardInputHandler:
+    """
+    KeyboardInputHandler manages keyboard inputs and corresponding actions.
+
+    It sets up global hotkeys to trigger actions based on keyboard shortcuts.
+    """
+
     def __init__(self):
+        """
+        Initialize the KeyboardInputHandler instance.
+
+        It sets up global hotkeys for specific keyboard shortcuts.
+        """
         self.hotkeys = keyboard.GlobalHotKeys(
             {
                 "<ctrl>+u": on_activate_c,
@@ -100,6 +109,11 @@ class KeyboardInputHandler:
         )
 
     def listen(self):
+        """
+        Listen for keyboard inputs and trigger corresponding actions.
+
+        This method sets up signal handling for SIGINT and starts listening for keyboard inputs.
+        """
         signal.signal(signal.SIGINT, sigint_handler)
         with self.hotkeys as hk:
             hk.join()

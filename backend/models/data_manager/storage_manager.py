@@ -7,6 +7,10 @@ import os
 
 
 class DSlogger:
+    """
+    Class for logging database activities.
+    """
+
     logger = ModelLogger("data-saving").customiseLogger(
         filename=os.path.join("{}".format(get_base_path()), "logs", "storage.log")
     )
@@ -15,26 +19,39 @@ class DSlogger:
 class StorageManager:
     """
     Manages data collection from specified data models and stores it in a file-based database.
+
+    Attributes:
+    - sensor_names (Sequence[str]): Names of sensors to store in the database.
+    - db_path (str): Path to the file-based database.
+
+    Methods:
+    - __init__(self, sensor_names: Sequence[str] = [], **kwargs): Initialize the StorageManager instance with specified sensors and additional parameters.
+    - get_data_from_specified_sensor(self, data: Dict[str, str]) -> Dict[str, str]: Filter and return data from the specified sensors.
+    - save_collected_data(self, data: Dict) -> None: Save the collected data to the database.
+    - run(self, recv_cmd_pipe: Connection, data_pipe: Connection) -> None: Main logic for data storage, which runs in a loop until a termination command is received.
     """
 
     def __init__(self, sensor_names: Sequence[str] = [], **kwargs):
         """
-        Initialize the DataSavingManager instance.
+        Initialize the StorageManager instance.
 
-        parameters:
-        - sensor_names (List[str]): Names of sensor to store in database.
+        Parameters:
+        - sensor_names (Sequence[str]): Names of sensors to store in the database.
         - kwargs: Additional parameters (locks, queues, or managers).
         """
         self.sensor_names = sensor_names
         self.db_path = FileDB().create_file()
         DSlogger.logger.info("Ready to saving to database")
 
-    def get_data_from_specified_sensor(self, data: Dict[str, str]):
+    def get_data_from_specified_sensor(self, data: Dict[str, str]) -> Dict[str, str]:
         """
-        gets data from sensors that are specified. this data is gotten from all sensors available then compared with the sensor you wish to collect data from
+        Get data from the specified sensors.
 
-        Parameter:
-            - data: data from all sensors available
+        Parameters:
+        - data (Dict[str, str]): Data from all available sensors.
+
+        Returns:
+        - Dict[str, str]: Filtered data containing only the specified sensors.
         """
         if not self.sensor_names:
             return data
@@ -48,20 +65,22 @@ class StorageManager:
     def save_collected_data(self, data: Dict) -> None:
         """
         Save the collected data to the database.
-        
-        parameter:
-            - data: data to be saved
+
+        Parameters:
+        - data (Dict): Data to be saved.
         """
         with FileDB(self.db_path, "a") as db:
             db.write_data_line(data)
 
-    def run(
-        self,
-        recv_cmd_pipe: Connection,
-        data_pipe: Connection,
-    ) -> None:
+    def run(self, recv_cmd_pipe: Connection, data_pipe: Connection) -> None:
         """
-        logic for storage in database
+        Main logic for data storage.
+
+        Runs in a loop, polling data from sensors and saving it to the database until a termination command is received.
+
+        Parameters:
+        - recv_cmd_pipe (Connection): Pipe for receiving commands.
+        - data_pipe (Connection): Pipe for receiving data.
         """
         while True:
             if data_pipe.poll():

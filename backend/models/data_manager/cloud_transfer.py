@@ -27,6 +27,7 @@ class CTFlogger:
     """
     Class for logging cloud transfer activities.
     """
+
     logger = ModelLogger("cloud-transfer").customiseLogger(
         filename=os.path.join(
             "{}".format(get_base_path()), "logs", "cloud_transfer.log"
@@ -264,9 +265,9 @@ class CloudTransferManager:
         self.meta_db = MetaDB()
         self.lock = lock
 
-
     def batch_upload(
-        self, base_path: Optional[str] = None,
+        self,
+        base_path: Optional[str] = None,
     ) -> None:
         """
         Perform batch upload of files to the cloud.
