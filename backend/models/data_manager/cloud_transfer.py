@@ -24,6 +24,9 @@ import os
 
 
 class CTFlogger:
+    """
+    Class for logging cloud transfer activities.
+    """
     logger = ModelLogger("cloud-transfer").customiseLogger(
         filename=os.path.join(
             "{}".format(get_base_path()), "logs", "cloud_transfer.log"
@@ -32,10 +35,28 @@ class CTFlogger:
 
 
 def on_connection_interrupted(connection, error, **kwargs):
+    """
+    Callback function invoked when the MQTT connection is interrupted.
+
+    Parameters:
+        - connection: The MQTT connection object.
+        - error (str): The error message describing the interruption.
+        - **kwargs: Additional keyword arguments.
+    """
+
     CTFlogger.logger.error("Connection interrupted. error: {}".format(error))
 
 
 def on_connection_resumed(connection, return_code, session_present, **kwargs):
+    """
+    Callback function invoked when the MQTT connection is resumed.
+
+    Parameters:
+        - connection: The MQTT connection object.
+        - return_code (int): The return code indicating the connection status.
+        - session_present (bool): Indicates if the session is present.
+        - **kwargs: Additional keyword arguments.
+    """
     CTFlogger.logger.info(
         "Connection resumed. return_code: {} session_present: {}".format(
             return_code, session_present
@@ -54,6 +75,12 @@ def on_connection_resumed(connection, return_code, session_present, **kwargs):
 
 
 def on_resubscribe_complete(resubscribe_future):
+    """
+    Callback function invoked when resubscription to topics is complete.
+
+    Parameters:
+        - resubscribe_future: The future object representing the resubscription process.
+    """
     resubscribe_results = resubscribe_future.result()
     CTFlogger.logger.info("Resubscribe results: {}".format(resubscribe_results))
 
@@ -63,10 +90,28 @@ def on_resubscribe_complete(resubscribe_future):
 
 
 def on_message_received(topic, payload, dup, qos, retain, **kwargs):
+    """
+    Callback function invoked when a message is received.
+
+    Parameters:
+        - topic (str): The topic from which the message was received.
+        - payload (bytes): The payload of the message.
+        - dup (bool): Indicates if the message is a duplicate.
+        - qos (int): The quality of service level.
+        - retain (bool): Indicates if the message should be retained.
+        - **kwargs: Additional keyword arguments.
+    """
     CTFlogger.logger.info("Received message from topic '{}': {}".format(topic, payload))
 
 
 def on_connection_success(connection, callback_data):
+    """
+    Callback function invoked when the MQTT connection is successful.
+
+    Parameters:
+        - connection: The MQTT connection object.
+        - callback_data: Additional callback data.
+    """
     assert isinstance(callback_data, mqtt.OnConnectionSuccessData)
     CTFlogger.logger.info(
         "Connection Successful with return code: {} session present: {}".format(
@@ -76,6 +121,13 @@ def on_connection_success(connection, callback_data):
 
 
 def on_connection_failure(connection, callback_data):
+    """
+    Callback function invoked when the MQTT connection fails.
+
+    Parameters:
+        - connection: The MQTT connection object.
+        - callback_data: Additional callback data.
+    """
     assert isinstance(callback_data, mqtt.OnConnectionFailureData)
     CTFlogger.logger.warning(
         "Connection failed with error code: {}".format(callback_data.error)
@@ -83,6 +135,13 @@ def on_connection_failure(connection, callback_data):
 
 
 def on_connection_closed(connection, callback_data):
+    """
+    Callback function to handle the event of a connection being closed.
+
+    Parameters:
+    - connection: The connection object.
+    - callback_data: Additional data associated with the callback.
+    """
     CTFlogger.logger.warning("Connection closed")
 
 
@@ -162,6 +221,7 @@ class CloudTransfer:
 
         Parameters:
         - data (Dict[str, Any]): The data to be published.
+        - timeout (int): Timeout duration for the publish operation.
         """
         try:
             message_json = json.dumps(data)
@@ -204,23 +264,15 @@ class CloudTransferManager:
         self.meta_db = MetaDB()
         self.lock = lock
 
-        # try:
-        #     if is_internet_connected():
-        #         self.cloud_transfer.connect()
-
-        # except AWSCloudConnectionError:
-        #     print("Init connect Error")
-        #     pass
 
     def batch_upload(
-        self, base_path: Optional[str] = None, metadata_path: Optional[str] = None
+        self, base_path: Optional[str] = None,
     ) -> None:
         """
         Perform batch upload of files to the cloud.
 
         Parameters:
         - base_path (Optional[str]): The base path for file storage.
-        - metadata_path (Optional[str]): The path to the metadata file.
         """
         # Only works on Linux and Mac OS
         if not base_path:
@@ -336,6 +388,13 @@ class CloudTransferManager:
         return files_to_be_uploaded
 
     def run(self, recv_cmd_pipe: Connection, data_pipe: Connection = None):
+        """
+        Logic for transferring data to cloud.
+
+        Parameters:
+        - recv_cmd_pipe (Connection): Pipe to receive commands.
+        - data_pipe (Optional[Connection]): Unused for now.
+        """
         db = MetaDB()
 
         while True:
