@@ -1,4 +1,4 @@
-from models.data_manager.data_saving import StorageManager, FileDB
+from models.data_manager.storage_manager import StorageManager, FileDB
 from multiprocessing.connection import Pipe
 from unittest.mock import MagicMock, patch
 import logging
@@ -41,14 +41,14 @@ class TestDataSavingManager(unittest.TestCase):
         data = {"logitude": 89.32, "latitude": 171.22}
         with patch.object(FileDB, "create_file"):
             data_saving_manager = StorageManager(["logitude"])
-            new_data = data_saving_manager.get_specified_data(data)
+            new_data = data_saving_manager.get_data_from_specified_sensor(data)
             self.assertDictEqual(new_data, {"logitude": 89.32})
 
     def test_get_required_data_with_multiple_sensornames(self):
         data = {"logitude": 89.32, "latitude": 171.22}
         with patch.object(FileDB, "create_file"):
             data_saving_manager = StorageManager(["logitude", "latitude"])
-            new_data = data_saving_manager.get_specified_data(data)
+            new_data = data_saving_manager.get_data_from_specified_sensor(data)
             self.assertDictEqual(new_data, data)
 
     def test_get_required_data_with_wrong_sensor_name(self):
@@ -56,13 +56,13 @@ class TestDataSavingManager(unittest.TestCase):
         with patch.object(FileDB, "create_file"):
             data_saving_manager = StorageManager(["longitude"])
             with self.assertRaises(KeyError):
-                data_saving_manager.get_specified_data(data)
+                data_saving_manager.get_data_from_specified_sensor(data)
 
     def test_get_required_data_with_no_sensor_name(self):
         data = {"logitude": 89.32, "latitude": 171.22}
         with patch.object(FileDB, "create_file"):
             data_saving_manager = StorageManager()
-            new_data = data_saving_manager.get_specified_data(data)
+            new_data = data_saving_manager.get_data_from_specified_sensor(data)
             self.assertDictEqual(new_data, data)
 
     def test_run_method(self):

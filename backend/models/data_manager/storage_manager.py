@@ -21,7 +21,7 @@ class StorageManager:
         """
         Initialize the DataSavingManager instance.
 
-        Args:
+        parameters:
         - sensor_names (List[str]): Names of sensor to store in database.
         - kwargs: Additional parameters (locks, queues, or managers).
         """
@@ -29,7 +29,13 @@ class StorageManager:
         self.db_path = FileDB().create_file()
         DSlogger.logger.info("Ready to saving to database")
 
-    def get_specified_data(self, data: Dict[str, str]):
+    def get_data_from_specified_sensor(self, data: Dict[str, str]):
+        """
+        gets data from sensors that are specified. this data is gotten from all sensors available then compared with the sensor you wish to collect data from
+
+        Parameter:
+            - data: data from all sensors available
+        """
         if not self.sensor_names:
             return data
 
@@ -40,7 +46,12 @@ class StorageManager:
         return new_data
 
     def save_collected_data(self, data: Dict) -> None:
-        """Save the collected data to the database."""
+        """
+        Save the collected data to the database.
+        
+        parameter:
+            - data: data to be saved
+        """
         with FileDB(self.db_path, "a") as db:
             db.write_data_line(data)
 
@@ -49,11 +60,14 @@ class StorageManager:
         recv_cmd_pipe: Connection,
         data_pipe: Connection,
     ) -> None:
+        """
+        logic for storage in database
+        """
         while True:
             if data_pipe.poll():
                 data = data_pipe.recv()
                 DSlogger.logger.info(f"Data: {data} polled successfully")
-                data = self.get_specified_data(data)
+                data = self.get_data_from_specified_sensor(data)
                 self.save_collected_data(data)
                 DSlogger.logger.info(f"Data: {data} saved successfully")
             if recv_cmd_pipe.poll():

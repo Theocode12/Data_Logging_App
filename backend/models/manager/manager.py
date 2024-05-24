@@ -1,5 +1,5 @@
 from models.sensor_mgmt.sensor_manager import SensorDataManager
-from models.data_manager.data_saving import StorageManager
+from models.data_manager.storage_manager import StorageManager
 from models.data_manager.cloud_transfer import CloudTransferManager
 from models import ModelLogger
 from multiprocessing.connection import Pipe
