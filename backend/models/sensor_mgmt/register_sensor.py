@@ -3,4 +3,5 @@ class SensorModule:
         "models.sensors.gps.GPS",
         "models.sensors.time.Time",
         "models.sensors.date.Date",
+        "models.sensors.ultrasonic.Utrasonic",
     ]
