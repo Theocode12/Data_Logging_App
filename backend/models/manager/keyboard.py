@@ -10,19 +10,19 @@ def sigint_handler(signal, frame):
 
 
 def on_ctrl_c():
-    print("ctrl-c on")
+    print("uploading to cloud ...")
     manager = Manager.get_instance()
     manager.handle_command("START-CLOUD_TRANSFER")
 
 
 def off_ctrl_c():
-    print("ctrl-c off")
+    print("stopped uploading to cloud ...")
     manager = Manager.get_instance()
     manager.handle_command("STOP-CLOUD_TRANSFER")
 
 
 def on_ctrl_s():
-    print("ctrl-s on", flush=True)
+    print("saving data to database ...", flush=True)
     manager = Manager.get_instance()
     sensors = get_active_sensors()
     manager.handle_command("START-DATA_SAVING", *sensors)
@@ -45,19 +45,19 @@ def get_active_sensors(line: str = None):
 
 
 def off_ctrl_s():
-    print("ctrl-s off", flush=True)
+    print("stopped saving to database ...", flush=True)
     manager = Manager.get_instance()
     manager.handle_command("STOP-DATA_SAVING")
 
 
 def on_ctrl_d():
-    print("ctrl-d on")
+    print('data collection ongoing ...')
     manager = Manager.get_instance()
     manager.handle_command("START-DATA_COLLECTION")
 
 
 def off_ctrl_d():
-    print("ctrl-d off")
+    print("data collection stopped ...")
     manager = Manager.get_instance()
     manager.handle_command("STOP-DATA_COLLECTION")
 

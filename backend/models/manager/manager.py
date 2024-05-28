@@ -97,7 +97,7 @@ class Manager:
         status = self.cmd_hdlr.execute_command(command, self, *args, **kwargs)
         self.update_processes(status.get("process_name"), status.get("process"))
         print(
-            f"status: {status['status']} \nmessage: {status['message']} \nprocess-name: {status['process_name']} \nis-alive: {status['process']}"
+            f"{status['status']}: ", end=""
         )
         return status
 
